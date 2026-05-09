@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="root" alignment="CENTER" spacing="12" style="-fx-background-color: #0f0f13; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="com.yourname.controller.LibraryController">
+
+    <Label style="-fx-font-size: 48px; -fx-text-fill: #2a2a42;" text="♪" />
+
+    <Label style="-fx-font-size: 15px; -fx-text-fill: #3a3a5a;" text="Library view coming in Phase 3" />
+
+    <Label style="-fx-font-size: 12px; -fx-text-fill: #2a2a42;" text="Import audio files to get started" />
+
+</VBox>

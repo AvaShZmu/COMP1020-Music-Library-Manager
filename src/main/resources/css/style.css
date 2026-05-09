@@ -1,0 +1,100 @@
+.top-bar {
+    -fx-background-color: #1a1a2e;
+    -fx-padding: 12px 20px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.app-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.sidebar {
+    -fx-background-color: #16213e;
+    -fx-padding: 20px 10px;
+}
+
+.nav-header {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 11px;
+    -fx-padding: 8px 10px;
+}
+
+.content-area {
+    -fx-background-color: #0f3460;
+}
+
+.playback-bar {
+    -fx-background-color: #1a1a2e;
+    -fx-padding: 0 20px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* =====================================================
+   CARD GRID (Library screen)
+   ===================================================== */
+.card-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.card-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.card-grid {
+    -fx-background-color: transparent;
+    -fx-padding: 16 28 28 28;
+}
+
+/* Individual track card */
+.track-card {
+    -fx-background-color: #1a1a28;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-pref-width: 160px;
+    -fx-max-width: 160px;
+    -fx-padding: 0 0 12 0;
+}
+
+.track-card:hover {
+    -fx-background-color: #222238;
+}
+
+.track-card.selected {
+    -fx-background-color: #1e1e3a;
+    -fx-border-color: #6c63ff;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+}
+
+/* Album art placeholder inside the card */
+.card-art {
+    -fx-background-color: #2a2a42;
+    -fx-background-radius: 8 8 0 0;
+    -fx-pref-width: 160px;
+    -fx-pref-height: 160px;
+    -fx-min-height: 160px;
+}
+
+.card-art-icon {
+    -fx-text-fill: #3a3a5a;
+    -fx-font-size: 40px;
+}
+
+.card-title {
+    -fx-text-fill: #e8e8ff;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 10 2 10;
+    -fx-max-width: 140px;
+}
+
+.card-artist {
+    -fx-text-fill: #6060a0;
+    -fx-font-size: 11px;
+    -fx-padding: 0 10 0 10;
+    -fx-max-width: 140px;
+}

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="com.yourname.controller.MainController">
+
+    <!-- ═══════════════════════════════════════
+         TOP BAR — search + app title
+         ═══════════════════════════════════════ -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="top-bar">
+
+            <!-- App title -->
+            <Label styleClass="app-title" text="♪  Music Library" />
+
+            <!-- Spacer pushes search to center -->
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Search field -->
+            <TextField fx:id="searchField" onKeyReleased="#handleSearch" prefWidth="280" promptText="Search songs, artists, albums…" styleClass="search-field" />
+
+            <!-- Spacer pushes buttons to right -->
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Sort + Filter buttons -->
+            <Button onAction="#handleSort" prefWidth="80" styleClass="btn-secondary" text="Sort ↕" />
+            <Button onAction="#handleFilter" prefWidth="80" styleClass="btn-secondary" text="Filter" />
+
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════
+         LEFT — sidebar navigation
+         ═══════════════════════════════════════ -->
+    <left>
+        <VBox prefWidth="210" spacing="0" styleClass="sidebar">
+
+            <!-- LIBRARY section -->
+            <Label styleClass="nav-section-header" text="LIBRARY" />
+
+            <Button fx:id="btnAllTracks" maxWidth="Infinity" onAction="#showLibrary" styleClass="nav-item" text="♪   All Tracks" />
+
+            <Button fx:id="btnFavourites" maxWidth="Infinity" onAction="#showFavourites" styleClass="nav-item" text="♥   Favourites" />
+
+            <!-- PLAYLISTS section -->
+            <Label styleClass="nav-section-header" text="PLAYLISTS" />
+
+            <!-- Playlist list — populated dynamically from PlaylistStorage -->
+            <ListView fx:id="playlistNavList" maxHeight="Infinity" styleClass="playlist-nav-list" VBox.vgrow="ALWAYS" />
+
+            <!-- New Playlist button pinned to bottom -->
+            <VBox alignment="BOTTOM_CENTER">
+                <padding><Insets bottom="16" left="12" right="12" top="8" /></padding>
+                <Button maxWidth="Infinity" onAction="#handleNewPlaylist" styleClass="btn-primary" text="+ New Playlist" />
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <!-- ═══════════════════════════════════════
+         CENTER — swappable content area
+         ═══════════════════════════════════════ -->
+    <center>
+        <!-- StackPane lets us swap child views by
+             calling getChildren().setAll(loader.load()) -->
+        <StackPane fx:id="contentArea" styleClass="content-area" />
+    </center>
+
+    <!-- ═══════════════════════════════════════
+         BOTTOM — playback bar (always visible)
+         ═══════════════════════════════════════ -->
+    <bottom>
+        <HBox fx:id="playbackBar" alignment="CENTER" prefHeight="88" spacing="0" styleClass="playback-bar">
+
+            <!-- LEFT: now-playing info -->
+            <VBox alignment="CENTER_LEFT" prefWidth="220" spacing="3">
+                <HBox.margin><Insets left="4" /></HBox.margin>
+                <Label fx:id="nowPlayingTitle" styleClass="now-playing-title" text="No track playing" />
+                <Label fx:id="nowPlayingArtist" styleClass="now-playing-artist" text="" />
+            </VBox>
+
+            <!-- CENTER: controls + progress -->
+            <VBox alignment="CENTER" spacing="8" HBox.hgrow="ALWAYS">
+
+                <!-- Transport buttons -->
+                <HBox alignment="CENTER" spacing="6" styleClass="playback-controls">
+                    <Button fx:id="btnShuffle" onAction="#handleShuffle" styleClass="btn-playback" text="⇄" />
+                    <Button fx:id="btnPrevious" onAction="#handlePrevious" styleClass="btn-playback" text="⏮" />
+                    <Button fx:id="btnPlayPause" onAction="#handlePlayPause" styleClass="btn-play-pause" text="▶" />
+                    <Button fx:id="btnNext" onAction="#handleNext" styleClass="btn-playback" text="⏭" />
+                    <Button fx:id="btnRepeat" onAction="#handleRepeat" styleClass="btn-playback" text="↻" />
+                </HBox>
+
+                <!-- Progress bar row -->
+                <HBox alignment="CENTER" spacing="8">
+                    <Label fx:id="currentTimeLabel" styleClass="time-label" text="0:00" />
+                    <Slider fx:id="progressSlider" max="100" min="0" onMousePressed="#handleProgressPressed" onMouseReleased="#handleProgressReleased" prefWidth="300" styleClass="progress-slider" value="0" />
+                    <Label fx:id="totalTimeLabel" styleClass="time-label" text="0:00" />
+                </HBox>
+
+            </VBox>
+
+            <!-- RIGHT: volume -->
+            <HBox alignment="CENTER_RIGHT" prefWidth="180" spacing="8">
+                <HBox.margin><Insets right="4" /></HBox.margin>
+                <Label styleClass="now-playing-artist" text="🔉" />
+                <Slider fx:id="volumeSlider" max="1" min="0" prefWidth="90" styleClass="volume-slider" value="0.7" />
+                <!--                                        ^ onValueChanged="#handleVolumeChange" -->
+            </HBox>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>
