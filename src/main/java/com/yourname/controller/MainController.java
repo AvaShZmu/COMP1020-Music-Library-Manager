@@ -1,5 +1,7 @@
 package com.yourname.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,7 +12,10 @@ import javafx.application.Platform;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * MainController — owns the BorderPane shell.
@@ -31,6 +36,12 @@ public class MainController implements Initializable {
     /* SIDEBAR */
     @FXML private Button   btnAllTracks;
     @FXML private Button   btnFavourites;
+    @FXML private TextField playlistSearchField;
+    // All playlist names — never changes
+    private List<String> allPlaylists = new ArrayList<>();
+
+    // What the ListView currently shows
+    private ObservableList<String> displayedPlaylists = FXCollections.observableArrayList();
     @FXML private ListView<String> playlistNavList;   // String = playlist title for now
 
     /* CENTER */
@@ -58,6 +69,8 @@ public class MainController implements Initializable {
 
     // ── State ─────────────────────────────────────────────────────────────────
     private Button activeNavButton;   // tracks which sidebar button is highlighted
+    private enum ActiveView { LIBRARY, PLAYLIST, NONE }
+    private ActiveView currentView = ActiveView.NONE;
 
     // ─────────────────────────────────────────────────────────────────────────
     @Override
@@ -70,12 +83,21 @@ public class MainController implements Initializable {
         showLibrary();
 
         // 3. Populate playlist sidebar — replace with real PlaylistStorage data in Phase 6
-        playlistNavList.getItems().addAll("Late Night Jazz", "Workout Mix", "Focus Mode");
+        allPlaylists.addAll(List.of("Late Night Jazz", "Workout Mix", "Focus Mode"));
+        displayedPlaylists.setAll(allPlaylists);
+        playlistNavList.setItems(displayedPlaylists);
 
         // 4. Clicking a playlist name in the sidebar opens the PlaylistView
         playlistNavList.setOnMouseClicked(event -> {
             String selected = playlistNavList.getSelectionModel().getSelectedItem();
-            if (selected != null) showPlaylist(selected);
+            currentView = ActiveView.PLAYLIST;
+            if (selected != null) {
+                if (activeNavButton != null) {
+                    activeNavButton.getStyleClass().remove("active");
+                    activeNavButton = null;
+                }
+                showPlaylist(selected);
+            }
         });
 
         // 5. Volume slider initial sync
@@ -93,6 +115,8 @@ public class MainController implements Initializable {
     /** Load LibraryView.fxml into the CENTER pane. */
     @FXML
     public void showLibrary() {
+        currentView = ActiveView.LIBRARY;
+        playlistNavList.getSelectionModel().clearSelection();
         setActiveNav(btnAllTracks);
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -113,6 +137,8 @@ public class MainController implements Initializable {
     /** Load LibraryView filtered to favourites. */
     @FXML
     public void showFavourites() {
+        currentView = ActiveView.LIBRARY;
+        playlistNavList.getSelectionModel().clearSelection();
         setActiveNav(btnFavourites);
         // For now, reuse LibraryView — in Phase 3 pass a filter flag
         showLibrary();
@@ -141,22 +167,30 @@ public class MainController implements Initializable {
     @FXML
     private void handleSearch() {
         String query = searchField.getText().trim();
-        if (libraryController != null) {
-            libraryController.applySearch(query);
+
+        switch (currentView) {
+            case LIBRARY  -> { if (libraryController  != null) libraryController.applySearch(query);  }
+            case PLAYLIST -> { if (playlistController != null) playlistController.applySearch(query); }
+            case NONE     -> { /* nothing loaded yet, do nothing */ }
         }
     }
 
     @FXML
     private void handleSort() {
-        if (libraryController != null) {
-            libraryController.cycleSortOrder();
+
+        switch (currentView) {
+            case LIBRARY  -> { if (libraryController  != null) libraryController.cycleSortOrder();   }
+            case PLAYLIST -> { if (playlistController != null) playlistController.cycleSortOrder();  }
+            case NONE     -> {}
         }
     }
 
     @FXML
     private void handleFilter() {
-        if (libraryController != null) {
-            libraryController.showFilterDialog();
+        switch (currentView) {
+            case LIBRARY  -> { if (libraryController  != null) libraryController.showFilterDialog();  }
+            case PLAYLIST -> { if (playlistController != null) playlistController.showFilterDialog(); }
+            case NONE     -> {}
         }
     }
 
@@ -174,10 +208,29 @@ public class MainController implements Initializable {
         dialog.showAndWait().ifPresent(name -> {
             if (!name.isBlank()) {
                 // backend.createPlaylist(name);          // wire in Phase 6
+                allPlaylists.add(name);
+                displayedPlaylists.add(name);
                 playlistNavList.getItems().add(name);    // optimistic UI update
                 showPlaylist(name);
             }
         });
+    }
+
+    @FXML
+    private void handlePlaylistSearch() {
+        String query = playlistSearchField.getText().trim();
+        searchSidebarPlaylists(query);
+    }
+
+    private void searchSidebarPlaylists(String query) {
+        if (query.isBlank()) {
+            displayedPlaylists.setAll(allPlaylists);
+            return;
+        }
+        List<String> filtered = allPlaylists.stream()
+                .filter(name -> name.toLowerCase().contains(query.toLowerCase()))
+                .collect(Collectors.toList());
+        displayedPlaylists.setAll(filtered);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

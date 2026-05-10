@@ -98,3 +98,20 @@
     -fx-padding: 0 10 0 10;
     -fx-max-width: 140px;
 }
+
+.sidebar-search {
+    -fx-background-color: #1e1e2e;
+    -fx-text-fill: #c0c0e0;
+    -fx-prompt-text-fill: #4a4a6a;
+    -fx-border-color: #2a2a42;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 5 10 5 10;
+    -fx-font-size: 12px;
+    -fx-margin: 4 10 6 10;
+}
+
+.sidebar-search:focused {
+    -fx-border-color: #6c63ff;
+}

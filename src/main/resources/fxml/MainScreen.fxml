@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="com.yourname.controller.MainController">
+<BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yourname.controller.MainController">
 
     <!-- ═══════════════════════════════════════
          TOP BAR — search + app title
@@ -54,9 +54,10 @@
 
             <!-- PLAYLISTS section -->
             <Label styleClass="nav-section-header" text="PLAYLISTS" />
+         <TextField fx:id="playlistSearchField" onKeyReleased="#handlePlaylistSearch" promptText="Search playlists..." styleClass="sidebar-search" />
 
             <!-- Playlist list — populated dynamically from PlaylistStorage -->
-            <ListView fx:id="playlistNavList" maxHeight="Infinity" styleClass="playlist-nav-list" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="playlistNavList" maxHeight="Infinity" prefWidth="190.0" styleClass="playlist-nav-list" VBox.vgrow="ALWAYS" />
 
             <!-- New Playlist button pinned to bottom -->
             <VBox alignment="BOTTOM_CENTER">

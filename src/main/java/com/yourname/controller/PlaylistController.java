@@ -29,4 +29,18 @@ public class PlaylistController implements Initializable {
         // Phase 6 implementation
         System.out.println("Loading playlist: " + playlistTitle);
     }
+    /** Called by MainController when the search field changes. */
+    public void applySearch(String query) {
+        // Phase 4 implementation
+    }
+
+    /** Called by MainController when the Sort button is clicked. */
+    public void cycleSortOrder() {
+        // Phase 4 implementation
+    }
+
+    /** Called by MainController when the Filter button is clicked. */
+    public void showFilterDialog() {
+        // Phase 4 implementation
+    }
 }
