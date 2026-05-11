@@ -37,15 +37,13 @@ public class MainController implements Initializable {
     @FXML private Button   btnAllTracks;
     @FXML private Button   btnFavourites;
     @FXML private TextField playlistSearchField;
-    // All playlist names — never changes
-    private List<String> allPlaylists = new ArrayList<>();
-
-    // What the ListView currently shows
-    private ObservableList<String> displayedPlaylists = FXCollections.observableArrayList();
+    private final List<String> allPlaylists = new ArrayList<>();
+    private final ObservableList<String> displayedPlaylists = FXCollections.observableArrayList();
     @FXML private ListView<String> playlistNavList;   // String = playlist title for now
 
     /* CENTER */
     @FXML private StackPane contentArea;
+    private Parent libraryView = null;
 
     /* BOTTOM — playback */
     @FXML private Label  nowPlayingTitle;
@@ -119,13 +117,15 @@ public class MainController implements Initializable {
         playlistNavList.getSelectionModel().clearSelection();
         setActiveNav(btnAllTracks);
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/LibraryView.fxml")
-            );
-            Parent libraryView = loader.load();
+            if(libraryView == null) {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/fxml/LibraryView.fxml")
+                );
+                libraryView = loader.load();
+                libraryController = loader.getController();
+                libraryController.setMainController(this);
+            }
             contentArea.getChildren().setAll(libraryView);
-            libraryController = loader.getController();
-
             // Pass the search text if already typed
             // libraryController.setBackend(backend);
 
@@ -210,7 +210,9 @@ public class MainController implements Initializable {
                 // backend.createPlaylist(name);          // wire in Phase 6
                 allPlaylists.add(name);
                 displayedPlaylists.add(name);
-                playlistNavList.getItems().add(name);    // optimistic UI update
+                String query = playlistSearchField.getText().trim();
+                searchSidebarPlaylists(query);
+                //playlistNavList.getItems().add(name);    // optimistic UI update
                 showPlaylist(name);
             }
         });

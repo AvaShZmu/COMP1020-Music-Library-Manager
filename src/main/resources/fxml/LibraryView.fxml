@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 
-<VBox fx:id="root" alignment="CENTER" spacing="12" style="-fx-background-color: #0f0f13; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="com.yourname.controller.LibraryController">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yourname.controller.LibraryController"
+      styleClass="content-area"
+      VBox.vgrow="ALWAYS">
 
-    <Label style="-fx-font-size: 48px; -fx-text-fill: #2a2a42;" text="♪" />
+    <!-- Header -->
+    <VBox styleClass="content-header">
+        <Label fx:id="contentTitle"
+               text="All Tracks"
+               styleClass="content-title"/>
+        <Label fx:id="trackCountLabel"
+               text="0 songs"
+               styleClass="content-subtitle"/>
+    </VBox>
 
-    <Label style="-fx-font-size: 15px; -fx-text-fill: #3a3a5a;" text="Library view coming in Phase 3" />
+    <!-- Toolbar -->
+    <HBox styleClass="toolbar" spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="btnImport"
+                text="+ Import Audio"
+                styleClass="btn-primary"
+                onAction="#handleImport"/>
+        <Button fx:id="btnRemove"
+                text="Remove"
+                styleClass="btn-secondary"
+                onAction="#handleRemove"/>
+    </HBox>
 
-    <Label style="-fx-font-size: 12px; -fx-text-fill: #2a2a42;" text="Import audio files to get started" />
+    <!-- Card grid -->
+    <ScrollPane VBox.vgrow="ALWAYS"
+                fitToWidth="true"
+                styleClass="card-scroll-pane">
+        <FlowPane fx:id="cardGrid"
+                  styleClass="card-grid"
+                  hgap="16" vgap="16"/>
+    </ScrollPane>
 
 </VBox>
