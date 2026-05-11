@@ -1,19 +1,26 @@
 package com.yourname.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import module1.audioModel.AudioItem;
+import javafx.scene.image.Image;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import module5.util.MetadataExtractor;
 
 public class LibraryController implements Initializable{
 
@@ -61,10 +68,45 @@ public class LibraryController implements Initializable{
         StackPane artPane = new StackPane();
         artPane.getStyleClass().add("card-art");
 
-        // Placeholder icon — replace with real art in Phase 7
+        // Placeholder icon (fallback)
         Label icon = new Label("♪");
         icon.getStyleClass().add("card-art-icon");
-        artPane.getChildren().add(icon);
+
+        // Actual image:
+        ImageView coverView = new ImageView();
+        coverView.setFitHeight(155);
+        coverView.setFitWidth(155);
+        coverView.setPreserveRatio(true);
+
+        // rounded corners
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(155, 155);
+        clip.setArcWidth(10);  // The amount of rounding (increase for more circular)
+        clip.setArcHeight(10); // Keep this matching the ArcWidth
+        coverView.setClip(clip);
+
+        artPane.getChildren().addAll(icon,  coverView);
+
+        // ── asynchronious album loading
+        CompletableFuture.supplyAsync(() -> {
+            // Fetch raw bytes in the background
+            return MetadataExtractor.getImage(item.getFileLocation());
+
+        }).thenAccept(imageBytes -> {
+            // Update UI on the main thread
+            Platform.runLater(() -> {
+                if (imageBytes != null && imageBytes.length > 0) {
+
+                    // Construct the image
+                    Image image = new Image(new ByteArrayInputStream(imageBytes));
+
+                    // If successful, apply to UI
+                    if (!image.isError() && image.getWidth() > 0) {
+                        coverView.setImage(image);
+                        icon.setVisible(false); // Hide placeholder
+                    }
+                }
+            });
+        });
 
         // ── Title ────────────────────────────────────────────────────────
         Label title = new Label(item.getTitle());
@@ -112,7 +154,7 @@ public class LibraryController implements Initializable{
         updateTrackCount();
     }
     @FXML
-    private void handleImport(){
+    private void handleImport() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Import Audio Files");
         chooser.getExtensionFilters().add(
@@ -122,22 +164,36 @@ public class LibraryController implements Initializable{
         Window window = cardGrid.getScene().getWindow();
         List<File> files = chooser.showOpenMultipleDialog(window);
 
-        if(files != null){
-            for(File file : files){
-                // Replace with real metadata extraction in Phase 7:
-                // AudioItem item = metadataExtractor.extract(file.getPath());
-                // audioStorage.addItem(item);
-                AudioItem placeholder = new AudioItem(
-                        UUID.randomUUID().toString(),
-                        "Unknown Artist",
-                        "11 May",
-                        100,
-                        "indie",
-                        file.getPath()
-                );
-                masterList.add(placeholder);
+        if (files != null && !files.isEmpty()) {
+            // If only importing one track, show the wizard
+            if (files.size() == 1) {
+                File singleFile = files.get(0);
+                AudioItem draftItem = MetadataExtractor.extract(singleFile.getPath());
+
+                // Start the audio checker
+                TrackEditDialog dialog = new TrackEditDialog(draftItem);
+                dialog.showAndWait().ifPresent(finalizedItem -> {
+                    masterList.add(finalizedItem);
+                    rebuildGrid(); // Update UI immediately
+                });
             }
-            rebuildGrid();
+            // If bulk import, silently import them
+            else {
+                int successCount = 0;
+
+                for (File file : files) {
+                    AudioItem item = MetadataExtractor.extract(file.getPath());
+                    if (item != null) {
+                        masterList.add(item);
+                        successCount++;
+                    } else {
+                        System.err.println("Skipped unreadable file: " + file.getName());
+                    }
+                }
+
+                rebuildGrid(); // Update UI once after the whole batch is done
+                System.out.println("Bulk import complete. Added " + successCount + " tracks.");
+            }
         }
     }
 
