@@ -38,6 +38,10 @@ public class MetadataExtractor {
                 artist = "Unknown Artist";
             }
 
+            if (genre == null || genre.isEmpty()) {
+                genre = "Unknown";
+            }
+
             return new AudioItem(
                     title,
                     artist,
@@ -50,14 +54,7 @@ public class MetadataExtractor {
         catch (Exception e) {
             // Fallback
             System.err.println("Error reading file: " + filePath + ". Resort to fallback.");
-            return new AudioItem(
-                    "Unknown Title",
-                    "Unknown Artist",
-                    "11 May",
-                    100,
-                    "indie",
-                    filePath
-            );
+            return null;
         }
     }
 

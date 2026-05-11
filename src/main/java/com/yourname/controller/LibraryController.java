@@ -146,13 +146,6 @@ public class LibraryController implements Initializable{
         });
         return card;
     }
-    private void rebuildGrid(){
-        cardGrid.getChildren().clear();
-        for(AudioItem item: masterList){
-            cardGrid.getChildren().add(buildCard(item));
-        }
-        updateTrackCount();
-    }
     @FXML
     private void handleImport() {
         FileChooser chooser = new FileChooser();
@@ -174,7 +167,7 @@ public class LibraryController implements Initializable{
                 TrackEditDialog dialog = new TrackEditDialog(draftItem);
                 dialog.showAndWait().ifPresent(finalizedItem -> {
                     masterList.add(finalizedItem);
-                    rebuildGrid(); // Update UI immediately
+                    applyAll();
                 });
             }
             // If bulk import, silently import them
@@ -191,7 +184,7 @@ public class LibraryController implements Initializable{
                     }
                 }
 
-                rebuildGrid(); // Update UI once after the whole batch is done
+                applyAll(); // Update UI once after the whole batch is done
                 System.out.println("Bulk import complete. Added " + successCount + " tracks.");
             }
         }
@@ -217,7 +210,7 @@ public class LibraryController implements Initializable{
                 selectedCard = null;
                 // playingCard = null;
                 btnRemove.setDisable(true);
-                rebuildGrid();
+                applyAll();
             }
         });
     }
@@ -351,15 +344,16 @@ public class LibraryController implements Initializable{
     }
 
     public void clearFilter(){
-        String filterCategory = null;
-        String filterOperator = null;
-        String filterValue    = null;
+        filterCategory = null;
+        filterOperator = null;
+        filterValue    = null;
         applyAll();
     }
 
     private void applyAll() {
         // Step 1 — start from full master list
         List<AudioItem> result = new ArrayList<>(masterList);
+        System.out.println(result.size());
 
         // Step 2 — apply search using matchesQuery()
         if(!currentQuery.isBlank()){
@@ -367,6 +361,7 @@ public class LibraryController implements Initializable{
                     .filter(item -> item.matchesQuery(currentQuery) )
                     .collect(Collectors.toList());
         }
+        System.out.println(result.size());
 
         // Step 3 — apply filter using passesFilter()
         if(filterCategory!=null){
@@ -377,6 +372,7 @@ public class LibraryController implements Initializable{
                             filterValue))
                     .collect(Collectors.toList());
         }
+        System.out.println(result.size());
 
         // Step 4 — apply sort using compareTo()
         switch (currentSort){
@@ -385,7 +381,13 @@ public class LibraryController implements Initializable{
             case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
             case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
         }
-        rebuildGrid();
+        System.out.println(result.size());
+        // Step 5 — rebuild grid
+        cardGrid.getChildren().clear();
+        for (AudioItem item : result) {
+            cardGrid.getChildren().add(buildCard(item));
+        }
+        updateTrackCount(result.size());
     }
 
     public void setMainController(MainController mc) {

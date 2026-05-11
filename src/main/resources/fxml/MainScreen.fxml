@@ -37,7 +37,7 @@
                     text="Sort: A → Z"
                     styleClass="btn-secondary"
                     onAction="#handleSort"
-                    prefWidth="110"/>
+                    prefWidth="120"/>
 
             <Button fx:id="btnFilter"
                     text="Filter"
