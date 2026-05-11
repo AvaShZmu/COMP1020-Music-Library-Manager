@@ -33,8 +33,24 @@
             <Region HBox.hgrow="ALWAYS" />
 
             <!-- Sort + Filter buttons -->
-            <Button onAction="#handleSort" prefWidth="80" styleClass="btn-secondary" text="Sort ↕" />
-            <Button onAction="#handleFilter" prefWidth="80" styleClass="btn-secondary" text="Filter" />
+            <Button fx:id="btnSort"
+                    text="Sort: A → Z"
+                    styleClass="btn-secondary"
+                    onAction="#handleSort"
+                    prefWidth="110"/>
+
+            <Button fx:id="btnFilter"
+                    text="Filter"
+                    styleClass="btn-secondary"
+                    onAction="#handleFilter"
+                    prefWidth="80"/>
+
+            <Button fx:id="btnClearFilter"
+                    text="✕ filter"
+                    styleClass="btn-danger"
+                    onAction="#handleClearFilter"
+                    visible="false"
+                    managed="false"/>
 
         </HBox>
     </top>

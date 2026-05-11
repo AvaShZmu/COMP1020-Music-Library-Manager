@@ -32,6 +32,8 @@ public class MainController implements Initializable {
 
     /* TOP BAR */
     @FXML private TextField searchField;
+    @FXML private Button btnSort;
+    @FXML private Button btnClearFilter;
 
     /* SIDEBAR */
     @FXML private Button   btnAllTracks;
@@ -185,6 +187,10 @@ public class MainController implements Initializable {
         }
     }
 
+    public void updateSortLabel(String label){
+        btnSort.setText(label);
+    }
+
     @FXML
     private void handleFilter() {
         switch (currentView) {
@@ -193,6 +199,23 @@ public class MainController implements Initializable {
             case NONE     -> {}
         }
     }
+
+    public void showClearFilter(String label){
+        btnClearFilter.setText("✕ " + label);
+        btnClearFilter.setVisible(true);
+        btnClearFilter.setManaged(true);
+    }
+
+    @FXML
+    public void handleClearFilter() {
+        if(libraryController!=null){
+            libraryController.clearFilter();
+        }
+        btnClearFilter.setVisible(false);
+        btnClearFilter.setManaged(false);
+    }
+
+
 
     // ─────────────────────────────────────────────────────────────────────────
     //  SIDEBAR HANDLERS
