@@ -111,11 +111,11 @@
 
                 <!-- Transport buttons -->
                 <HBox alignment="CENTER" spacing="6" styleClass="playback-controls">
-                    <Button fx:id="btnShuffle" onAction="#handleShuffle" styleClass="btn-playback" text="⇄" />
+                    <!-- <Button fx:id="btnShuffle" onAction="#handleShuffle" styleClass="btn-playback" text="⇄" /> -->
                     <Button fx:id="btnPrevious" onAction="#handlePrevious" styleClass="btn-playback" text="⏮" />
                     <Button fx:id="btnPlayPause" onAction="#handlePlayPause" styleClass="btn-play-pause" text="▶" />
                     <Button fx:id="btnNext" onAction="#handleNext" styleClass="btn-playback" text="⏭" />
-                    <Button fx:id="btnRepeat" onAction="#handleRepeat" styleClass="btn-playback" text="↻" />
+                    <!-- <Button fx:id="btnRepeat" onAction="#handleRepeat" styleClass="btn-playback" text="↻" /> -->
                 </HBox>
 
                 <!-- Progress bar row -->

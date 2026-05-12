@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import module3.storage.AudioStorage;
 import module5.util.MetadataExtractor;
 import module5.util.LibraryLogic;
 
@@ -40,6 +41,7 @@ public class LibraryController implements Initializable{
 
     // Reference back to parent so double-click can update the bottom bar
     private MainController mainController;
+    private AudioStorage audioStorage;
 
     // Search
     private String currentQuery = "";
@@ -62,6 +64,10 @@ public class LibraryController implements Initializable{
         // Load from backend once wired:
         // masterList.addAll(audioStorage.getAllItems());
         // rebuildGrid();
+    }
+
+    public void setAudioStorage(AudioStorage as) {
+        this.audioStorage = as;
     }
 
     private VBox buildCard(AudioItem item){
@@ -87,7 +93,7 @@ public class LibraryController implements Initializable{
 
         artPane.getChildren().addAll(icon,  coverView);
 
-        // ── asynchronious album loading
+        // ── asynchronous album loading
         CompletableFuture.supplyAsync(() -> {
             // Fetch raw bytes in the background
             return MetadataExtractor.getImage(item.getFileLocation());
@@ -168,6 +174,7 @@ public class LibraryController implements Initializable{
                 TrackEditDialog dialog = new TrackEditDialog(draftItem);
                 dialog.showAndWait().ifPresent(finalizedItem -> {
                     masterList.add(finalizedItem);
+                    audioStorage.addItem(finalizedItem);
                     applyAll();
                 });
             }
@@ -179,6 +186,7 @@ public class LibraryController implements Initializable{
                     AudioItem item = MetadataExtractor.extract(file.getPath());
                     if (item != null) {
                         masterList.add(item);
+                        audioStorage.addItem(item);
                         successCount++;
                     } else {
                         System.err.println("Skipped unreadable file: " + file.getName());
@@ -414,5 +422,4 @@ public class LibraryController implements Initializable{
     private void updateTrackCount() {
         updateTrackCount(masterList.size());
     }
-    // test this updateTrackCount
 }

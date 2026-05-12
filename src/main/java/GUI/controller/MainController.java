@@ -1,5 +1,7 @@
 package GUI.controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +10,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-import javafx.application.Platform;
+import javafx.util.Duration;
+import module1.audioModel.AudioItem;
+import module3.storage.AudioStorage;
+import module4.playback.Controller;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,19 +58,22 @@ public class MainController implements Initializable {
     @FXML private Button btnPlayPause;
     @FXML private Button btnPrevious;
     @FXML private Button btnNext;
-    @FXML private Button btnShuffle;
-    @FXML private Button btnRepeat;
+    //@FXML private Button btnShuffle;
+    //@FXML private Button btnRepeat;
     @FXML private Slider progressSlider;
     @FXML private Slider volumeSlider;
     @FXML private Label  currentTimeLabel;
     @FXML private Label  totalTimeLabel;
 
+    private Timeline progressTimeline;
+
     // ── Child controllers (set via loader after swapping views) ───────────────
     private LibraryController  libraryController;
     private PlaylistController playlistController;
 
-    // ── Backend facade — wire this once your Controller class is accessible ──
-    // private playback.Controller backend;
+    // ── Backend facade
+    private Controller playbackController;
+    private AudioStorage audioStorage;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private Button activeNavButton;   // tracks which sidebar button is highlighted
@@ -75,6 +83,9 @@ public class MainController implements Initializable {
     // ─────────────────────────────────────────────────────────────────────────
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        playbackController = new Controller();
+        audioStorage = new AudioStorage();
 
         // 1. Mark "All Tracks" as the default active nav item
         setActiveNav(btnAllTracks);
@@ -103,9 +114,14 @@ public class MainController implements Initializable {
         // 5. Volume slider initial sync
         // Uncomment once backend is wired:
         // backend.setVolume(volumeSlider.getValue());
-        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) ->
-                handleVolumeChange()
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) ->{
+                if(playbackController != null) {
+                    playbackController.setVolume(newVal.doubleValue());
+                }
+            }
         );
+
+
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -126,10 +142,9 @@ public class MainController implements Initializable {
                 libraryView = loader.load();
                 libraryController = loader.getController();
                 libraryController.setMainController(this);
+                libraryController.setAudioStorage(audioStorage);
             }
             contentArea.getChildren().setAll(libraryView);
-            // Pass the search text if already typed
-            // libraryController.setBackend(backend);
 
         } catch (IOException e) {
             showError("Could not load Library view", e);
@@ -264,44 +279,61 @@ public class MainController implements Initializable {
 
     @FXML
     private void handlePlayPause() {
-        // backend.pause() / backend.resume()   — wire in Phase 5
-        boolean isPlaying = btnPlayPause.getText().equals("⏸");
-        btnPlayPause.setText(isPlaying ? "▶" : "⏸");
+        if(btnPlayPause.getText().equals("⏸")){
+            playbackController.pause();
+            btnPlayPause.setText("▶");
+        }
+        else{
+            playbackController.resume();
+            btnPlayPause.setText("⏸");
+        }
     }
 
     @FXML
     private void handlePrevious() {
-        // backend.playPrevious();
+        playbackController.playPrevious();
     }
 
     @FXML
     private void handleNext() {
-        // backend.playNext();
+        playbackController.playNext();
     }
-
+    /*
     @FXML
     private void handleShuffle() {
-        // backend.shuffle();
+        playbackController.shuffle();
     }
 
     @FXML
     private void handleRepeat() {
         // toggle repeat mode
     }
+     */
 
     @FXML
     private void handleProgressPressed() {
-        // Pause timeline updates while user is dragging
+        if(progressTimeline != null){
+            progressTimeline.pause();
+        }
     }
 
     @FXML
     private void handleProgressReleased() {
-        // backend.seek(progressSlider.getValue());
+        double total  = playbackController.getDuration().toSeconds();
+        System.out.println(progressSlider.getValue());
+        double seekTo = (progressSlider.getValue() / 100.0) * total;
+        System.out.println(seekTo);
+        playbackController.setTime(seekTo);
+
+        // Resume timeline after seek
+        if (progressTimeline != null) {
+            progressTimeline.play();
+        }
     }
 
     @FXML
     private void handleVolumeChange() {
-        // backend.setVolume(volumeSlider.getValue());
+        playbackController.setVolume(volumeSlider.getValue());
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -316,22 +348,47 @@ public class MainController implements Initializable {
         nowPlayingTitle.setText(title);
         nowPlayingArtist.setText(artist);
         btnPlayPause.setText("⏸");
-        // backend.loadSingle(audioItem);   — wire in Phase 5
+
+        // Look up the AudioItem from AudioStorage directly
+        AudioItem item = audioStorage.getItem(trackId);
+        if(item == null) {
+            System.out.println("Track not found in storage: " + trackId);
+            return;
+        }
+
+        // 3. Tell playback Controller to load and play
+        //    Replace loadSingle with your actual method name
+        playbackController.startPlayBack(audioStorage.getItem(trackId));
+
+        // 4. Start progress updates
+        startProgressTimeline();
     }
 
-    /**
-     * Called by a background Timeline every second to update the progress bar.
-     * Wire this up in Phase 5 with:
-     *   Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> tickProgress()));
-     *   timeline.setCycleCount(Timeline.INDEFINITE);
-     *   timeline.play();
-     */
-    public void tickProgress(double currentSeconds, double totalSeconds) {
-        Platform.runLater(() -> {
-            progressSlider.setValue((currentSeconds / totalSeconds) * 100);
-            currentTimeLabel.setText(formatTime((int) currentSeconds));
-            totalTimeLabel.setText(formatTime((int) totalSeconds));
-        });
+    private void startProgressTimeline() {
+        // Stop any existing timeline first
+        if (progressTimeline != null) {
+            progressTimeline.stop();
+        }
+
+        progressTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> tickProgress())
+        );
+        progressTimeline.setCycleCount(Timeline.INDEFINITE);
+        progressTimeline.play();
+    }
+
+    private void tickProgress() {
+        double current = playbackController.getCurrentTime().toSeconds();
+        double total   = playbackController.getDuration().toSeconds();
+
+        if (total <= 0) return;
+
+        // Update slider position
+        progressSlider.setValue((current / total) * 100);
+
+        // Update time labels
+        currentTimeLabel.setText(formatTime((int) current));
+        totalTimeLabel.setText(formatTime((int) total));
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -70,4 +70,18 @@ public class AudioPlayer {
         }
         return mediaPlayer.getCurrentTime();
     }
+
+    public void setTime(Duration time){
+        if (mediaPlayer == null) {
+            return;
+        }
+        mediaPlayer.seek(time);
+    }
+
+    public Duration getDuration(){
+        if (mediaPlayer == null){
+            return Duration.ZERO;
+        }
+        return mediaPlayer.getTotalDuration();
+    }
 }

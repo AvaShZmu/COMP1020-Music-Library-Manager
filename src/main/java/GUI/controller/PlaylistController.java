@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 public class PlaylistController implements Initializable {
 
     @FXML private VBox root;
+    private module4.playback.Controller backend = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -42,5 +43,9 @@ public class PlaylistController implements Initializable {
     /** Called by MainController when the Filter button is clicked. */
     public void showFilterDialog() {
         // Phase 4 implementation
+    }
+
+    public void setBackend(module4.playback.Controller backend){
+        this.backend = backend;
     }
 }

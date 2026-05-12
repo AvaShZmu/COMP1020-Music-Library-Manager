@@ -99,6 +99,12 @@ public class Controller {
         return player.getCurrentTime();
     }
 
+    public void setTime(double time) {player.setTime(Duration.seconds(time));}
+
+    public Duration getDuration() {
+        return player.getDuration();
+    }
+
     // GUI showing stuff
     public AudioItem getCurrentTrack() {
         return queue.getCurrent();
