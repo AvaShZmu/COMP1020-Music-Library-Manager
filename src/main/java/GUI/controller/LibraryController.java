@@ -229,8 +229,8 @@ public class LibraryController implements Initializable{
         String label = switch (currentSort){
             case TITLE_ASC -> "Sort: A -> Z";
             case TITLE_DESC -> "Sort Z -> A";
-            case DATE_ASC -> "Sort: Newest";
-            case DATE_DESC -> "Sort: Oldest";
+            case DATE_DESC -> "Sort: Newest";
+            case DATE_ASC -> "Sort: Oldest";
         };
 
         if(mainController!=null){

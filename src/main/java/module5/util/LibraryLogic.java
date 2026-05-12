@@ -22,7 +22,8 @@ public class LibraryLogic {
                 "dd/MM/yyyy",
                 "yyyy/MM/dd",
                 "MM/dd/yyyy",
-                "dd/M/yyyy"
+                "dd/M/yyyy",
+                "yyyy"
         };
 
         for (String format : possibleFormats) {
