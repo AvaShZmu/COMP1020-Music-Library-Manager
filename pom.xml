@@ -53,7 +53,7 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>
-                        com.yourname/com.yourname.Main
+                        com.yourname/GUI.Main
                     </mainClass>
                 </configuration>
             </plugin>

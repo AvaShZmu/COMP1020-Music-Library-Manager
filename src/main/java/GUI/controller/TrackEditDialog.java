@@ -1,4 +1,4 @@
-package com.yourname.controller;
+package GUI.controller;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;

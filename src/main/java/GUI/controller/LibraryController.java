@@ -1,4 +1,4 @@
-package com.yourname.controller;
+package GUI.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;

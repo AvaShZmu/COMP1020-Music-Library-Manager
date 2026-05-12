@@ -1,4 +1,4 @@
-package com.yourname.controller;
+package GUI.controller;
 
 public class PlaybackBarController {
 }

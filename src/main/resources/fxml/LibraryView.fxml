@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.yourname.controller.LibraryController"
+      fx:controller="GUI.controller.LibraryController"
       styleClass="content-area"
       VBox.vgrow="ALWAYS">
 

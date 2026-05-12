@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" alignment="CENTER" spacing="12" style="-fx-background-color: #0f0f13; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="com.yourname.controller.PlaylistController">
+<VBox fx:id="root" alignment="CENTER" spacing="12" style="-fx-background-color: #0f0f13; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="GUI.controller.PlaylistController">
 
     <Label style="-fx-font-size: 48px; -fx-text-fill: #2a2a42;" text="≡" />
 

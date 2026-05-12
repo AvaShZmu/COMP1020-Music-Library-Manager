@@ -8,10 +8,10 @@ module com.yourname {
         requires javafx.graphics;
         requires javafx.media;
 
-        opens com.yourname to javafx.fxml;
-        opens com.yourname.controller to javafx.fxml;
-        exports com.yourname;
-        exports com.yourname.controller;
+        opens GUI to javafx.fxml;
+        opens GUI.controller to javafx.fxml;
+        exports GUI;
+        exports GUI.controller;
         exports module1.audioModel;
         exports module2.playlistModel;
         exports module3.storage;
