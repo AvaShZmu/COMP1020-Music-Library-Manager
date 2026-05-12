@@ -627,3 +627,23 @@
     -fx-text-fill: #4caf7d;
     -fx-font-size: 12px;
 }
+
+.right-click-menu {
+    -fx-background-color: #282828;
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.menu-item {
+    -fx-padding: 8 20 8 20;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.menu-item:focused {
+    -fx-background-color: #3E3E3E;
+    -fx-background-radius: 6;
+}

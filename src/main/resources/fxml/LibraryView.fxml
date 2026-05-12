@@ -24,10 +24,10 @@
                 text="+ Import Audio"
                 styleClass="btn-primary"
                 onAction="#handleImport"/>
-        <Button fx:id="btnRemove"
+        <!-- <Button fx:id="btnRemove"
                 text="Remove"
                 styleClass="btn-secondary"
-                onAction="#handleRemove"/>
+                onAction="#handleRemove"/> -->
     </HBox>
 
     <!-- Card grid -->

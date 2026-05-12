@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -28,7 +29,7 @@ public class LibraryController implements Initializable{
 
     @FXML private FlowPane cardGrid;
     @FXML private Label trackCountLabel;
-    @FXML private Button btnRemove;
+    //@FXML private Button btnRemove;
 
     private final List<AudioItem> masterList = new ArrayList<>();
 
@@ -60,10 +61,21 @@ public class LibraryController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        btnRemove.setDisable(true);
+        //btnRemove.setDisable(true);
         // Load from backend once wired:
         // masterList.addAll(audioStorage.getAllItems());
         // rebuildGrid();
+        cardGrid.setOnMouseClicked(event -> {
+            if (selectedCard != null) {
+
+                selectedCard.getStyleClass().remove("selected");
+
+                selectedCard = null;
+                selectedItem = null;
+
+                //btnRemove.setDisable(true);
+            }
+        });
     }
 
     public void setAudioStorage(AudioStorage as) {
@@ -131,28 +143,64 @@ public class LibraryController implements Initializable{
 
         card.setUserData(item.getTrackID());
 
+        ContextMenu menu = new ContextMenu();
+        menu.getStyleClass().add("right-click-menu");
+        MenuItem remove = new MenuItem("Remove from library");
+        MenuItem addInQueue = new MenuItem("Add to queue");
+        MenuItem addInPlaylist = new MenuItem("Add to Playlist");
+
+        remove.setOnAction(e -> handleRemove(item));
+
+        menu.getItems().addAll(remove,addInQueue,addInPlaylist);
+
         card.setOnMouseClicked(event ->{
-            if(selectedCard != null){
-                selectedCard.getStyleClass().remove("selected");
-            }
+            if(event.getButton() == MouseButton.PRIMARY) {
+                event.consume();
 
-            card.getStyleClass().add("selected");
-            selectedCard = card;
-            selectedItem = item;
-            btnRemove.setDisable(false);
-
-            if(event.getClickCount() == 2 && mainController != null){
-                if(playingCard != null){
-                    playingCard.getStyleClass().remove("playing");
+                if (selectedCard != null) {
+                    selectedCard.getStyleClass().remove("selected");
                 }
-                card.getStyleClass().add("playing");
-                playingCard = card;
 
-                mainController.playTrack(item.getTrackID(), item.getTitle(), item.getAuthor());
+                card.getStyleClass().add("selected");
+                selectedCard = card;
+                selectedItem = item;
+                //btnRemove.setDisable(false);
+
+                if (event.getClickCount() == 2 && mainController != null) {
+                    if (playingCard != null) {
+                        playingCard.getStyleClass().remove("playing");
+                    }
+                    card.getStyleClass().add("playing");
+                    playingCard = card;
+
+                    mainController.playTrack(item.getTrackID(), item.getTitle(), item.getAuthor());
+                }
+            }
+            if(event.getButton() == MouseButton.SECONDARY) {
+                menu.show(card, event.getScreenX(), event.getScreenY());
             }
         });
+
         return card;
     }
+
+    private void handleRemove(AudioItem item){
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Remove Track");
+        confirm.setHeaderText("Remove \"" + item.getTitle() + "\"?");
+        confirm.setContentText(
+                "This removes the track from your library. " +
+                        "The original file will not be deleted."
+        );
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                masterList.remove(item);
+                applyAll();
+            }
+        });
+    }
+
     @FXML
     private void handleImport() {
         FileChooser chooser = new FileChooser();
@@ -199,6 +247,7 @@ public class LibraryController implements Initializable{
         }
     }
 
+    /*
     @FXML
     private void handleRemove(){
         if (selectedItem == null) return;
@@ -223,6 +272,7 @@ public class LibraryController implements Initializable{
             }
         });
     }
+     */
 
     public void applySearch(String query) {
         currentQuery = query;
