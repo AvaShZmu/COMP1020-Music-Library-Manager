@@ -23,7 +23,8 @@ public class LibraryLogic {
                 "yyyy/MM/dd",
                 "MM/dd/yyyy",
                 "dd/M/yyyy",
-                "yyyy"
+                "yyyy-MM-dd",
+                "dd-MM-yyyy"
         };
 
         for (String format : possibleFormats) {
@@ -33,7 +34,7 @@ public class LibraryLogic {
             } catch (DateTimeParseException e) {
             }
         }
-
+        System.out.println("Failed date: [" + date + "]");
         throw new IllegalArgumentException();
     }
 

@@ -87,4 +87,9 @@ public class PlaybackQueue {
         queue.addAll(itemList);
         currIndex = 0;
     }
+
+    public List<AudioItem> getQueue() {
+        // only shows audio tracks from the current pointer to end of queue
+        return queue.subList(currIndex, queue.size());
+    }
 }

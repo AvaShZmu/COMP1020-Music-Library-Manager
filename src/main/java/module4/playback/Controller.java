@@ -30,6 +30,10 @@ public class Controller {
         return queue.getCurrIndex();
     }
 
+    public List<AudioItem> getQueue() {
+        return queue.getQueue();
+    }
+
     /* Methods for audio playback (player-side) */
 
     public void startPlayBack(AudioItem item) {

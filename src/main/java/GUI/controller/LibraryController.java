@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import module5.util.MetadataExtractor;
+import module5.util.LibraryLogic;
 
 public class LibraryController implements Initializable{
 
@@ -151,7 +152,7 @@ public class LibraryController implements Initializable{
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Import Audio Files");
         chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.flac", "*.aac", "*.ogg")
+                new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.aac")
         );
 
         Window window = cardGrid.getScene().getWindow();
@@ -324,9 +325,10 @@ public class LibraryController implements Initializable{
             yearDialog.showAndWait().ifPresent(year -> {
                 if (year.isBlank()) return;
 
-                filterCategory = "releaseDate";
+                filterCategory = "date";
                 filterOperator = operator;
                 filterValue    = year.trim();
+                System.out.println("Filter value: " + filterValue);
                 applyAll();
 
                 String label = switch (operator) {
@@ -353,26 +355,19 @@ public class LibraryController implements Initializable{
     private void applyAll() {
         // Step 1 — start from full master list
         List<AudioItem> result = new ArrayList<>(masterList);
-        System.out.println(result.size());
+        System.out.println("Before apply all, size: " + result.size());
 
         // Step 2 — apply search using matchesQuery()
         if(!currentQuery.isBlank()){
-            result = result.stream()
-                    .filter(item -> item.matchesQuery(currentQuery) )
-                    .collect(Collectors.toList());
+            result = LibraryLogic.search(masterList, currentQuery);
         }
-        System.out.println(result.size());
+        System.out.println("After search: " + result.size());
 
         // Step 3 — apply filter using passesFilter()
         if(filterCategory!=null){
-            result = result.stream()
-                    .filter(item -> item.passesFilter(
-                            filterCategory,
-                            filterOperator,
-                            filterValue))
-                    .collect(Collectors.toList());
+            result = LibraryLogic.filter(masterList, filterCategory, filterOperator, filterValue);
         }
-        System.out.println(result.size());
+        System.out.println("After apply filter: " + result.size());
 
         // Step 4 — apply sort using compareTo()
         switch (currentSort){
@@ -381,7 +376,7 @@ public class LibraryController implements Initializable{
             case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
             case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
         }
-        System.out.println(result.size());
+        System.out.println("After sorting: " + result.size());
         // Step 5 — rebuild grid
         cardGrid.getChildren().clear();
         for (AudioItem item : result) {
