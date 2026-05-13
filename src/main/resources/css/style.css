@@ -220,31 +220,42 @@
 
 .btn-secondary {
     -fx-background-color: transparent;
-    -fx-text-fill: #aaaaaa;
+    -fx-text-fill: #666666;
     -fx-font-size: 13px;
     -fx-background-radius: 20;
     -fx-border-radius: 20;
     -fx-border-color: #444444;
     -fx-border-width: 1;
-    -fx-padding: 8 20 8 20;
+    -fx-padding: 7 18 7 18;
     -fx-cursor: hand;
+    -fx-pref-height: 36px;
 }
 
 .btn-secondary:hover {
-    -fx-background-color: #2a2a2a !important;
+    -fx-background-color: #1e1e1e !important;
     -fx-text-fill: #ffffff !important;
-    -fx-border-color: #888888;
+    -fx-border-color: #ffffff !important;
 }
 
 .btn-secondary:armed {
-    -fx-background-color: #333333 !important;
+    -fx-background-color: #2a2a2a !important;
+    -fx-text-fill: #ffffff !important;
+    -fx-border-color: #ffffff !important;
 }
 
 .btn-secondary:disabled {
     -fx-background-color: transparent;
-    -fx-text-fill: #444444;
-    -fx-border-color: #333333;
+    -fx-text-fill: #333333;
+    -fx-border-color: #2a2a2a;
     -fx-opacity: 1;
+}
+
+.btn-secondary.active {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff !important;
+    -fx-border-color: #ffffff !important;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 6, 0.3, 0, 0);
 }
 
 .btn-danger {
@@ -646,4 +657,84 @@
 .menu-item:focused {
     -fx-background-color: #3E3E3E;
     -fx-background-radius: 6;
+}
+
+/* =====================================================
+   Sort Combo Box
+   ===================================================== */
+
+.filter-combo {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-pref-height: 36px;
+}
+
+.filter-combo:hover {
+    -fx-background-color: #1e1e1e !important;
+}
+
+/* Selected value text */
+.filter-combo .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 0 4 0 4;
+    -fx-font-size: 13px;
+}
+
+/* Arrow */
+.filter-combo .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8 0 0;
+}
+
+.filter-combo .arrow {
+    -fx-background-color: #ffffff;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-scale-shape: true;
+    -fx-pref-width: 8px;
+    -fx-pref-height: 5px;
+}
+
+/* Dropdown popup */
+.filter-combo-popup .list-view {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+}
+
+.filter-combo-popup .list-view {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #333333;
+    -fx-border-width: 1;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #1e1e1e;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #1e1e1e !important;
+    -fx-text-fill: #cccccc !important;
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 13px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #2a2a2a !important;
+    -fx-text-fill: #ffffff !important;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #333333 !important;
+    -fx-text-fill: #ffffff !important;
 }

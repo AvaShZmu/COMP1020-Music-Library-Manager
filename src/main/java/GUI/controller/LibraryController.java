@@ -278,23 +278,14 @@ public class LibraryController implements Initializable{
         currentQuery = query;
         applyAll();
     }
-    public void cycleSortOrder()   {
-        currentSort = switch (currentSort){
-            case TITLE_ASC -> SortOrder.TITLE_DESC;
-            case TITLE_DESC -> SortOrder.DATE_ASC;
-            case DATE_ASC -> SortOrder.DATE_DESC;
-            case DATE_DESC -> SortOrder.TITLE_ASC;
+    public void applySortOrder(String order)   {
+        currentSort = switch (order) {
+            case "Title A → Z" -> SortOrder.TITLE_ASC;
+            case "Title Z → A" -> SortOrder.TITLE_DESC;
+            case "Newest first" -> SortOrder.DATE_DESC;
+            case "Oldest first" -> SortOrder.DATE_ASC;
+            default             -> SortOrder.TITLE_ASC;
         };
-        String label = switch (currentSort){
-            case TITLE_ASC -> "Sort: A -> Z";
-            case TITLE_DESC -> "Sort Z -> A";
-            case DATE_DESC -> "Sort: Newest";
-            case DATE_ASC -> "Sort: Oldest";
-        };
-
-        if(mainController!=null){
-            mainController.updateSortLabel(label);
-        }
         applyAll();
     }
     public void showFilterDialog() {

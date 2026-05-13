@@ -37,7 +37,8 @@ public class MainController implements Initializable {
 
     /* TOP BAR */
     @FXML private TextField searchField;
-    @FXML private Button btnSort;
+    @FXML private ComboBox<String> sortComboBox;
+    @FXML private Button btnFilter;
     @FXML private Button btnClearFilter;
 
     /* SIDEBAR */
@@ -121,6 +122,13 @@ public class MainController implements Initializable {
             }
         );
 
+        sortComboBox.getItems().addAll(
+                "Title A → Z",
+                "Title Z → A",
+                "Newest first",
+                "Oldest first"
+        );
+        sortComboBox.setValue("Title A → Z");  // default selection
 
     }
 
@@ -194,16 +202,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSort() {
+        String selected = sortComboBox.getValue();
+        if (selected == null) return;
 
         switch (currentView) {
-            case LIBRARY  -> { if (libraryController  != null) libraryController.cycleSortOrder();   }
-            case PLAYLIST -> { if (playlistController != null) playlistController.cycleSortOrder();  }
-            case NONE     -> {}
+            case LIBRARY  -> { if (libraryController  != null) libraryController.applySortOrder(selected);  }
+            case PLAYLIST -> { if (playlistController != null) playlistController.applySortOrder(selected); }
+            case NONE     -> { }
         }
-    }
-
-    public void updateSortLabel(String label){
-        btnSort.setText(label);
     }
 
     @FXML
@@ -219,6 +225,8 @@ public class MainController implements Initializable {
         btnClearFilter.setText("✕ " + label);
         btnClearFilter.setVisible(true);
         btnClearFilter.setManaged(true);
+
+        btnFilter.getStyleClass().add("active");
     }
 
     @FXML
@@ -228,6 +236,8 @@ public class MainController implements Initializable {
         }
         btnClearFilter.setVisible(false);
         btnClearFilter.setManaged(false);
+
+        btnFilter.getStyleClass().remove("active");
     }
 
 

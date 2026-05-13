@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ComboBox?>
 <BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.MainController">
 
     <!-- ═══════════════════════════════════════
@@ -27,17 +28,16 @@
             <Region HBox.hgrow="ALWAYS" />
 
             <!-- Search field -->
-            <TextField fx:id="searchField" onKeyReleased="#handleSearch" prefWidth="280" promptText="Search songs, artists, albums…" styleClass="search-field" />
+            <TextField fx:id="searchField" onKeyReleased="#handleSearch" prefWidth="500" maxWidth="700" HBox.hgrow="ALWAYS" promptText="Search songs, artists, albums…" styleClass="search-field" />
 
             <!-- Spacer pushes buttons to right -->
             <Region HBox.hgrow="ALWAYS" />
 
             <!-- Sort + Filter buttons -->
-            <Button fx:id="btnSort"
-                    text="Sort: A → Z"
-                    styleClass="btn-secondary"
-                    onAction="#handleSort"
-                    prefWidth="120"/>
+            <ComboBox fx:id="sortComboBox"
+                      styleClass="filter-combo"
+                      prefWidth="130"
+                      onAction="#handleSort"/>
 
             <Button fx:id="btnFilter"
                     text="Filter"

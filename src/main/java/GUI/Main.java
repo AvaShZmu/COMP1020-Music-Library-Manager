@@ -16,6 +16,7 @@ public class Main extends Application {
         stage.setTitle("Music Library Manager");
         stage.setMinWidth(900);
         stage.setMinHeight(600);
+        stage.setMaximized(true);
 
         stage.setScene(scene);
 
