@@ -83,7 +83,6 @@ public class PlaybackQueue {
         if (itemList == null || itemList.isEmpty()) {
             return;
         }
-        clear();
         queue.addAll(itemList);
         currIndex = 0;
     }

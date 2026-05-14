@@ -22,6 +22,8 @@ public class Controller {
         queue.buildQueueFromList(items);
     }
 
+    public void clearQueue() { queue.clear(); }
+
     public int getQueueSize() {
         return queue.getQueueSize();
     }

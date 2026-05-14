@@ -7,6 +7,7 @@ import interfaces.Filterable;
 import interfaces.Searchable;
 import module5.util.LibraryLogic;
 
+
 public class Playlist implements Searchable, Filterable, Comparable<Playlist> {
     protected String playlistID;
     protected String title;
