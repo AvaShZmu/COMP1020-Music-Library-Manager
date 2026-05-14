@@ -7,9 +7,15 @@ public class Controller {
     protected PlaybackQueue queue;
     protected AudioPlayer player;
 
+    private Runnable onTrackChanged; // For UI update
+
     public Controller() {
         queue = new PlaybackQueue();
         player = new AudioPlayer();
+    }
+
+    public void setOnTrackChangedListener(Runnable listener) {
+        this.onTrackChanged = listener;
     }
 
     /* Methods for loading items onto the queue (queue-side) */
@@ -44,6 +50,11 @@ public class Controller {
             return;
         }
         player.play(item.getFileLocation(), this::playNext);
+
+        // Trigger UI update
+        if (this.onTrackChanged != null) {
+            this.onTrackChanged.run();
+        }
     }
 
     // When song ends or user clicks on "next" icon, natural progression

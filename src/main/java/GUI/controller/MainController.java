@@ -2,6 +2,7 @@ package GUI.controller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -88,6 +89,11 @@ public class MainController implements Initializable {
         playbackController = new Controller();
         audioStorage = new AudioStorage();
 
+        // Attach UI callback to Controller:
+        playbackController.setOnTrackChangedListener(() -> {
+            Platform.runLater(this::updateNowPlaying);
+        });
+
         // 1. Mark "All Tracks" as the default active nav item
         setActiveNav(btnAllTracks);
 
@@ -115,12 +121,26 @@ public class MainController implements Initializable {
         // 5. Volume slider initial sync
         // Uncomment once backend is wired:
         // backend.setVolume(volumeSlider.getValue());
-        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) ->{
-                if(playbackController != null) {
-                    playbackController.setVolume(newVal.doubleValue());
-                }
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            // 1. Update the backend volume
+            if (playbackController != null) {
+                playbackController.setVolume(newVal.doubleValue());
             }
-        );
+
+            // 2. Dynamically color the track
+            javafx.scene.Node track = volumeSlider.lookup(".track");
+            if (track != null) {
+                // Calculate the percentage safely based on whatever your slider's max is
+                double percentage = (newVal.doubleValue() / volumeSlider.getMax()) * 100.0;
+
+                // Format CSS: White for active volume, Gray for remaining
+                String style = String.format(
+                        "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
+                        percentage, percentage
+                );
+                track.setStyle(style);
+            }
+        });
 
         sortComboBox.getItems().addAll(
                 "Title A → Z",
@@ -129,6 +149,22 @@ public class MainController implements Initializable {
                 "Oldest first"
         );
         sortComboBox.setValue("Title A → Z");  // default selection
+
+        // Listener to dynamically color the track as it progresses
+        progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            // Look up the track node inside the slider
+            javafx.scene.Node track = progressSlider.lookup(".track");
+            if (track != null) {
+                double percentage = newVal.doubleValue(); // Assuming max is 100
+
+                // Format a CSS linear gradient: green (#1db954) for passed, gray (#535353) for remaining
+                String style = String.format(
+                        "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
+                        percentage, percentage
+                );
+                track.setStyle(style);
+            }
+        });
 
     }
 
@@ -302,13 +338,11 @@ public class MainController implements Initializable {
     @FXML
     private void handlePrevious() {
         playbackController.playPrevious();
-        updateNowPlaying();
     }
 
     @FXML
     private void handleNext() {
         playbackController.playNext();
-        updateNowPlaying();
     }
     /*
     @FXML
@@ -371,8 +405,6 @@ public class MainController implements Initializable {
         playbackController.loadSingle(item);
         playbackController.startPlayBack(item);
 
-        // 4. Start progress updates
-        updateNowPlaying();
     }
 
     public void addToQueue(AudioItem item){
