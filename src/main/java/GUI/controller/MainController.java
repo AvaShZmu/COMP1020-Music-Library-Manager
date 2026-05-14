@@ -302,11 +302,13 @@ public class MainController implements Initializable {
     @FXML
     private void handlePrevious() {
         playbackController.playPrevious();
+        updateNowPlaying();
     }
 
     @FXML
     private void handleNext() {
         playbackController.playNext();
+        updateNowPlaying();
     }
     /*
     @FXML
@@ -354,23 +356,48 @@ public class MainController implements Initializable {
      * Called by LibraryController or PlaylistController when the user
      * double-clicks a track to start playing it.
      */
-    public void playTrack(String trackId, String title, String artist) {
-        nowPlayingTitle.setText(title);
-        nowPlayingArtist.setText(artist);
-        btnPlayPause.setText("⏸");
-
+    public void playTrack(AudioItem item) {
         // Look up the AudioItem from AudioStorage directly
-        AudioItem item = audioStorage.getItem(trackId);
         if(item == null) {
-            System.out.println("Track not found in storage: " + trackId);
             return;
         }
 
         // 3. Tell playback Controller to load and play
         //    Replace loadSingle with your actual method name
-        playbackController.startPlayBack(audioStorage.getItem(trackId));
+        // Clear whatever was in the queue
+        playbackController.clearQueue();
+
+        // Load the item and play it directly
+        playbackController.loadSingle(item);
+        playbackController.startPlayBack(item);
 
         // 4. Start progress updates
+        updateNowPlaying();
+    }
+
+    public void addToQueue(AudioItem item){
+        if (playbackController.getCurrentTrack() == null) {
+            playTrack(item);
+        }
+        else{
+            playbackController.loadSingle(item);
+        }
+    }
+
+    private void updateNowPlaying() {
+        AudioItem current = playbackController.getCurrentTrack();
+        if (current == null) return;
+
+        nowPlayingTitle.setText(current.getTitle());
+        nowPlayingArtist.setText(current.getAuthor());
+        btnPlayPause.setText("⏸");
+
+        // Update card highlight in library if visible
+        if (libraryController != null) {
+            libraryController.highlightPlayingCard(current.getTrackID());
+        }
+
+        // Restart timeline for new track
         startProgressTimeline();
     }
 
@@ -428,5 +455,12 @@ public class MainController implements Initializable {
         alert.setHeaderText(message);
         alert.setContentText(e.getMessage());
         alert.showAndWait();
+    }
+
+    private void printQueue(){
+        for(AudioItem item : playbackController.getQueue()){
+            System.out.print(item.getTitle() + " ");
+        }
+        System.out.println();
     }
 }

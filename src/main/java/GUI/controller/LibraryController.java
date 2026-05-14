@@ -146,12 +146,13 @@ public class LibraryController implements Initializable{
         ContextMenu menu = new ContextMenu();
         menu.getStyleClass().add("right-click-menu");
         MenuItem remove = new MenuItem("Remove from library");
-        MenuItem addInQueue = new MenuItem("Add to queue");
-        MenuItem addInPlaylist = new MenuItem("Add to Playlist");
+        MenuItem addToQueue = new MenuItem("Add to queue");
+        MenuItem addToPlaylist = new MenuItem("Add to Playlist");
 
         remove.setOnAction(e -> handleRemove(item));
+        addToQueue.setOnAction(e -> addToQueue(item));
 
-        menu.getItems().addAll(remove,addInQueue,addInPlaylist);
+        menu.getItems().addAll(remove,addToQueue,addToPlaylist);
 
         card.setOnMouseClicked(event ->{
             if(event.getButton() == MouseButton.PRIMARY) {
@@ -173,7 +174,7 @@ public class LibraryController implements Initializable{
                     card.getStyleClass().add("playing");
                     playingCard = card;
 
-                    mainController.playTrack(item.getTrackID(), item.getTitle(), item.getAuthor());
+                    mainController.playTrack(item);
                 }
             }
             if(event.getButton() == MouseButton.SECONDARY) {
@@ -182,6 +183,10 @@ public class LibraryController implements Initializable{
         });
 
         return card;
+    }
+
+    private void addToQueue(AudioItem item){
+        mainController.addToQueue(item);
     }
 
     private void handleRemove(AudioItem item){
