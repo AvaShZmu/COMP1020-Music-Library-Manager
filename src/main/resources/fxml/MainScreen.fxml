@@ -130,7 +130,7 @@
             <!-- RIGHT: volume -->
             <HBox alignment="CENTER_RIGHT" prefWidth="180" spacing="8">
                 <HBox.margin><Insets right="4" /></HBox.margin>
-                <Label styleClass="now-playing-artist" text="🔉" />
+                <Label styleClass="volume-icon" text="🔉" />
                 <Slider fx:id="volumeSlider" max="1" min="0" prefWidth="90" styleClass="volume-slider" value="0.7" />
                 <!--                                        ^ onValueChanged="#handleVolumeChange" -->
             </HBox>

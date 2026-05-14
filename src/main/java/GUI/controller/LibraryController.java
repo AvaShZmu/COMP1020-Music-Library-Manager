@@ -1,8 +1,11 @@
 package GUI.controller;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -11,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import module1.audioModel.AudioItem;
 import javafx.scene.image.Image;
 
@@ -103,7 +107,27 @@ public class LibraryController implements Initializable{
         clip.setArcHeight(10); // Keep this matching the ArcWidth
         coverView.setClip(clip);
 
-        artPane.getChildren().addAll(icon,  coverView);
+        // Hover play button
+        Button playButton = new Button("▶");
+        playButton.getStyleClass().add("hover-play-button");
+
+        playButton.setOpacity(0.0);
+        playButton.setVisible(false);
+        playButton.setFocusTraversable(false);
+
+        // Align to bottom right
+        StackPane.setAlignment(playButton, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(playButton, new Insets(0, 15, 15, 0));
+
+        // Animation
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(150), playButton);
+        fadeIn.setToValue(0.85);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), playButton);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(event -> playButton.setVisible(false));
+
+        artPane.getChildren().addAll(icon,  coverView, playButton);
 
         // ── asynchronous album loading
         CompletableFuture.supplyAsync(() -> {
@@ -143,6 +167,49 @@ public class LibraryController implements Initializable{
 
         card.setUserData(item.getTrackID());
 
+        // Stash button inside card's properties
+        card.getProperties().put("playButton", playButton);
+        card.getProperties().put("fadeIn", fadeIn);
+        card.getProperties().put("fadeOut", fadeOut);
+
+        // Hover logic
+        card.hoverProperty().addListener((obs, wasHovered, isHovered) -> {
+            if (playingCard == card) {
+                // It's the active track. Stop animations and lock it visible.
+                fadeIn.stop();
+                fadeOut.stop();
+                playButton.setVisible(true);
+                playButton.setOpacity(0.85);
+            } else {
+                if (isHovered) {
+                    fadeOut.stop(); // Cancel any outgoing fade
+                    playButton.setVisible(true); // Must be true so we can see it fade in
+                    fadeIn.playFromStart();
+                } else {
+                    fadeIn.stop(); // Cancel any incoming fade
+                    fadeOut.playFromStart();
+                }
+            }
+        });
+
+        // Play button click logic
+        playButton.setOnMouseClicked(e -> {
+            e.consume();
+
+            if (playingCard == card) {
+                if (mainController != null) {
+                    mainController.handlePlayPause();
+                }
+            }
+            else {
+                // new track
+                if (mainController != null) {
+                    mainController.playTrack(item);
+                }
+            }
+        });
+
+
         ContextMenu menu = new ContextMenu();
         menu.getStyleClass().add("right-click-menu");
         MenuItem remove = new MenuItem("Remove from library");
@@ -168,12 +235,6 @@ public class LibraryController implements Initializable{
                 //btnRemove.setDisable(false);
 
                 if (event.getClickCount() == 2 && mainController != null) {
-                    if (playingCard != null) {
-                        playingCard.getStyleClass().remove("playing");
-                    }
-                    card.getStyleClass().add("playing");
-                    playingCard = card;
-
                     mainController.playTrack(item);
                 }
             }
@@ -183,6 +244,15 @@ public class LibraryController implements Initializable{
         });
 
         return card;
+    }
+
+    public void syncActiveCardButton(String textState) {
+        if (playingCard != null) {
+            Button btn = (Button) playingCard.getProperties().get("playButton");
+            if (btn != null) {
+                btn.setText(textState);
+            }
+        }
     }
 
     private void addToQueue(AudioItem item){
@@ -444,15 +514,42 @@ public class LibraryController implements Initializable{
     }
 
     public void highlightPlayingCard(String trackID) {
+        // Clean up prev track
         if (playingCard != null) {
             playingCard.getStyleClass().remove("playing");
+
+            Button oldBtn = (Button) playingCard.getProperties().get("playButton");
+            FadeTransition oldFadeIn = (FadeTransition) playingCard.getProperties().get("fadeIn");
+            FadeTransition oldFadeOut = (FadeTransition) playingCard.getProperties().get("fadeOut");
+
+            if (oldBtn != null) {
+                oldBtn.setText("▶");
+
+                if (!playingCard.isHover()) {
+                    if (oldFadeIn != null) oldFadeIn.stop();
+                    if (oldFadeOut != null) oldFadeOut.playFromStart();
+                }
+            }
         }
+        // Set up new card
         cardGrid.getChildren().stream()
                 .filter(node -> trackID.equals(node.getUserData()))
                 .findFirst()
                 .ifPresent(node -> {
                     node.getStyleClass().add("playing");
                     playingCard = (VBox) node;
+
+                    Button newBtn = (Button) playingCard.getProperties().get("playButton");
+                    FadeTransition newFadeIn = (FadeTransition) playingCard.getProperties().get("fadeIn");
+                    FadeTransition newFadeOut = (FadeTransition) playingCard.getProperties().get("fadeOut");
+
+                    if (newBtn != null) {
+                        newBtn.setText("⏸");
+
+                        if (newFadeOut != null) newFadeOut.stop();
+                        newBtn.setVisible(true);
+                        if (newFadeIn != null) newFadeIn.playFromStart();
+                    }
                 });
     }
 

@@ -402,13 +402,13 @@
 
 .now-playing-title {
     -fx-text-fill: #ffffff;
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
 .now-playing-artist {
     -fx-text-fill: #888888;
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
 }
 
 /* ── Transport buttons ────────────────────────────── */
@@ -426,7 +426,7 @@
     -fx-pref-width: 36px;
     -fx-pref-height: 36px;
     -fx-cursor: hand;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
 }
 
 .btn-playback:hover {
@@ -446,7 +446,8 @@
     -fx-pref-width: 40px;
     -fx-pref-height: 40px;
     -fx-cursor: hand;
-    -fx-font-size: 14px;
+    -fx-font-size: 20px;
+    -fx-padding: 0;
 }
 
 .btn-play-pause:hover {
@@ -455,6 +456,32 @@
 
 .btn-play-pause:armed {
     -fx-background-color: #bbbbbb !important;
+}
+
+/* The Play Button Overlay */
+.hover-play-button {
+    -fx-background-color: #1db954;
+    -fx-text-fill: black;
+    -fx-font-size: 24px;
+    -fx-alignment: center;
+
+    /* Make it a perfect circle */
+    -fx-background-radius: 50%;
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-padding: 0;
+
+    /* Add a subtle drop shadow to lift it off the image */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 8, 0, 0, 4);
+}
+
+/* Hover effect for the button itself */
+.hover-play-button:hover {
+    -fx-background-color: #1ed760; /* Slightly brighter green on hover */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 4); /* Deeper shadow */
 }
 
 /* ── Progress slider ──────────────────────────────── */
@@ -484,10 +511,16 @@
     -fx-pref-height: 3px;
 }
 
+.volume-icon {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-alignment: center-right;
+}
+
 .volume-slider .thumb {
     -fx-background-color: #aaaaaa;
     -fx-background-radius: 50;
-    -fx-pref-width: 10px;
+    -fx-pref-width: 12px;
     -fx-pref-height: 10px;
     -fx-effect: null;
 }

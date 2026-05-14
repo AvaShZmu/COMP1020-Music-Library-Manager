@@ -126,20 +126,7 @@ public class MainController implements Initializable {
             if (playbackController != null) {
                 playbackController.setVolume(newVal.doubleValue());
             }
-
-            // 2. Dynamically color the track
-            javafx.scene.Node track = volumeSlider.lookup(".track");
-            if (track != null) {
-                // Calculate the percentage safely based on whatever your slider's max is
-                double percentage = (newVal.doubleValue() / volumeSlider.getMax()) * 100.0;
-
-                // Format CSS: White for active volume, Gray for remaining
-                String style = String.format(
-                        "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
-                        percentage, percentage
-                );
-                track.setStyle(style);
-            }
+            updateVolumeGradient();
         });
 
         sortComboBox.getItems().addAll(
@@ -152,20 +139,14 @@ public class MainController implements Initializable {
 
         // Listener to dynamically color the track as it progresses
         progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            // Look up the track node inside the slider
-            javafx.scene.Node track = progressSlider.lookup(".track");
-            if (track != null) {
-                double percentage = newVal.doubleValue(); // Assuming max is 100
-
-                // Format a CSS linear gradient: green (#1db954) for passed, gray (#535353) for remaining
-                String style = String.format(
-                        "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
-                        percentage, percentage
-                );
-                track.setStyle(style);
-            }
+            updateProgressGradient();
         });
 
+        // initialize gradient after ui renders
+        javafx.application.Platform.runLater(() -> {
+            updateVolumeGradient();
+            updateProgressGradient();
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -324,14 +305,18 @@ public class MainController implements Initializable {
     // ─────────────────────────────────────────────────────────────────────────
 
     @FXML
-    private void handlePlayPause() {
+    public void handlePlayPause() {
         if(btnPlayPause.getText().equals("⏸")){
             playbackController.pause();
             btnPlayPause.setText("▶");
         }
-        else{
+        else {
             playbackController.resume();
             btnPlayPause.setText("⏸");
+        }
+
+        if (libraryController != null) {
+            libraryController.syncActiveCardButton(btnPlayPause.getText());
         }
     }
 
@@ -494,5 +479,46 @@ public class MainController implements Initializable {
             System.out.print(item.getTitle() + " ");
         }
         System.out.println();
+    }
+
+    // Setup methods to apply gradient to progress bar and volume bar
+    private void updateVolumeGradient() {
+        javafx.scene.Node track = volumeSlider.lookup(".track");
+        if (track != null) {
+            // Prevent division by zero or negative max
+            double max = volumeSlider.getMax() <= 0 ? 100 : volumeSlider.getMax();
+            double percentage = (volumeSlider.getValue() / max) * 100.0;
+
+            // If math results in NaN or infinity, default to 0
+            if (Double.isNaN(percentage) || Double.isInfinite(percentage)) {
+                percentage = 0.0;
+            }
+
+            // Locale.US ensures decimals use a period (.), preventing CSS crashes in other regions
+            String style = String.format(java.util.Locale.US,
+                    "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
+                    percentage, Math.max(percentage, 0.1)
+            );
+            track.setStyle(style);
+        }
+    }
+
+    private void updateProgressGradient() {
+        javafx.scene.Node track = progressSlider.lookup(".track");
+        if (track != null) {
+            double max = progressSlider.getMax() <= 0 ? 100 : progressSlider.getMax();
+            double percentage = (progressSlider.getValue() / max) * 100.0;
+
+            // If math results in NaN or infinity, default to 0
+            if (Double.isNaN(percentage) || Double.isInfinite(percentage)) {
+                percentage = 0.0;
+            }
+
+            String style = String.format(java.util.Locale.US,
+                    "-fx-background-color: linear-gradient(to right, #ffffff %f%%, #535353 %f%%);",
+                    percentage, Math.max(percentage, 0.1)
+            );
+            track.setStyle(style);
+        }
     }
 }
