@@ -43,10 +43,12 @@ public class LibraryController implements Initializable{
 
     // Currently playing card — for green border highlight
     private VBox playingCard  = null;
+    private String playingID = null;
 
     // Reference back to parent so double-click can update the bottom bar
     private MainController mainController;
     private AudioStorage audioStorage;
+    private PlaybackBarController playbackBarController;
 
     // Search
     private String currentQuery = "";
@@ -82,9 +84,16 @@ public class LibraryController implements Initializable{
         });
     }
 
+    // Set up the controllers
+    public void setMainController(MainController mc) {
+        this.mainController = mc;
+    }
+
     public void setAudioStorage(AudioStorage as) {
         this.audioStorage = as;
     }
+
+    public void setPlaybackBarController(PlaybackBarController pc) {this.playbackBarController = pc;}
 
     private VBox buildCard(AudioItem item){
         // ── Art square ───────────────────────────────────────────────────
@@ -197,14 +206,14 @@ public class LibraryController implements Initializable{
             e.consume();
 
             if (playingCard == card) {
-                if (mainController != null) {
-                    mainController.handlePlayPause();
+                if (playbackBarController != null) {
+                    playbackBarController.handlePlayPause();
                 }
             }
             else {
                 // new track
-                if (mainController != null) {
-                    mainController.playTrack(item);
+                if (playbackBarController != null) {
+                    playbackBarController.playTrack(item);
                 }
             }
         });
@@ -234,8 +243,8 @@ public class LibraryController implements Initializable{
                 selectedItem = item;
                 //btnRemove.setDisable(false);
 
-                if (event.getClickCount() == 2 && mainController != null) {
-                    mainController.playTrack(item);
+                if (event.getClickCount() == 2 && playbackBarController != null) {
+                    playbackBarController.playTrack(item);
                 }
             }
             if(event.getButton() == MouseButton.SECONDARY) {
@@ -256,7 +265,9 @@ public class LibraryController implements Initializable{
     }
 
     private void addToQueue(AudioItem item){
-        mainController.addToQueue(item);
+        if (playbackBarController != null) {
+            playbackBarController.addToQueue(item);
+        }
     }
 
     private void handleRemove(AudioItem item){
@@ -477,23 +488,23 @@ public class LibraryController implements Initializable{
     }
 
     private void applyAll() {
-        // Step 1 — start from full master list
+        // start from full master list
         List<AudioItem> result = new ArrayList<>(masterList);
         System.out.println("Before apply all, size: " + result.size());
 
-        // Step 2 — apply search using matchesQuery()
+        // apply search using matchesQuery()
         if(!currentQuery.isBlank()){
             result = LibraryLogic.search(masterList, currentQuery);
         }
         System.out.println("After search: " + result.size());
 
-        // Step 3 — apply filter using passesFilter()
+        // apply filter using passesFilter()
         if(filterCategory!=null){
             result = LibraryLogic.filter(masterList, filterCategory, filterOperator, filterValue);
         }
         System.out.println("After apply filter: " + result.size());
 
-        // Step 4 — apply sort using compareTo()
+        // apply sort using compareTo()
         switch (currentSort){
             case TITLE_ASC -> Collections.sort(result);
             case TITLE_DESC -> result.sort((a,b) -> b.compareTo(a));
@@ -501,20 +512,22 @@ public class LibraryController implements Initializable{
             case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
         }
         System.out.println("After sorting: " + result.size());
-        // Step 5 — rebuild grid
+        // rebuild grid
         cardGrid.getChildren().clear();
         for (AudioItem item : result) {
             cardGrid.getChildren().add(buildCard(item));
         }
         updateTrackCount(result.size());
-    }
 
-    public void setMainController(MainController mc) {
-        this.mainController = mc;
+        if (playingID != null) {
+            playingCard = null;
+            highlightPlayingCard(playingID);
+        }
     }
 
     public void highlightPlayingCard(String trackID) {
         // Clean up prev track
+        playingID = trackID;
         if (playingCard != null) {
             playingCard.getStyleClass().remove("playing");
 
@@ -542,7 +555,6 @@ public class LibraryController implements Initializable{
                     Button newBtn = (Button) playingCard.getProperties().get("playButton");
                     FadeTransition newFadeIn = (FadeTransition) playingCard.getProperties().get("fadeIn");
                     FadeTransition newFadeOut = (FadeTransition) playingCard.getProperties().get("fadeOut");
-
                     if (newBtn != null) {
                         newBtn.setText("⏸");
 
