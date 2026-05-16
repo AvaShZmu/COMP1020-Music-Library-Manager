@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox fx:id="playbackBar" alignment="CENTER" prefHeight="88" spacing="0"
+      styleClass="playback-bar"
+      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="GUI.controller.PlaybackBarController">
+
+    <VBox alignment="CENTER_LEFT" prefWidth="220" spacing="3">
+        <HBox.margin><Insets left="4" /></HBox.margin>
+        <Label fx:id="nowPlayingTitle" styleClass="now-playing-title" text="No track playing" />
+        <Label fx:id="nowPlayingArtist" styleClass="now-playing-artist" text="" />
+    </VBox>
+
+    <VBox alignment="CENTER" spacing="8" HBox.hgrow="ALWAYS">
+        <HBox alignment="CENTER" spacing="6" styleClass="playback-controls">
+            <Button fx:id="btnPrevious" onAction="#handlePrevious" styleClass="btn-playback" text="⏮" />
+            <Button fx:id="btnPlayPause" onAction="#handlePlayPause" styleClass="btn-play-pause" text="▶" />
+            <Button fx:id="btnNext" onAction="#handleNext" styleClass="btn-playback" text="⏭" />
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="8">
+            <Label fx:id="currentTimeLabel" styleClass="time-label" text="0:00" />
+            <Slider fx:id="progressSlider" max="100" min="0" onMousePressed="#handleProgressPressed" onMouseReleased="#handleProgressReleased" prefWidth="300" styleClass="progress-slider" value="0" />
+            <Label fx:id="totalTimeLabel" styleClass="time-label" text="0:00" />
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" prefWidth="180" spacing="8">
+        <HBox.margin><Insets right="4" /></HBox.margin>
+        <Label styleClass="volume-icon" text="🔉" />
+        <Slider fx:id="volumeSlider" max="1" min="0" prefWidth="90" styleClass="volume-slider" value="0.7" />
+    </HBox>
+
+</HBox>
