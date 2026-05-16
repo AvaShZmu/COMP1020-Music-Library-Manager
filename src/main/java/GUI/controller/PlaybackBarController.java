@@ -86,11 +86,17 @@ public class PlaybackBarController implements Initializable {
 
     @FXML
     private void handlePrevious() {
+        if (playbackController.getQueue().size() + 1 == playbackController.getQueueSize()) {
+            playbackController.startPlayBack(playbackController.getCurrentTrack());
+        }
         playbackController.playPrevious();
     }
 
     @FXML
     private void handleNext() {
+        if (playbackController.getQueue().isEmpty()) {
+            playbackController.startPlayBack(playbackController.getCurrentTrack());
+        }
         playbackController.playNext();
     }
 
