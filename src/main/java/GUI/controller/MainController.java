@@ -18,8 +18,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
- * MainController — owns the BorderPane shell.
- *
+ * MainController — owns the BorderPane shell.*
  * Responsibilities:
  *   • Swap the CENTER content area between LibraryView and PlaylistView
  *   • Own the sidebar nav state (which item is "active")
@@ -31,9 +30,6 @@ public class MainController implements Initializable {
 
     /* TOP BAR */
     @FXML private TextField searchField;
-    @FXML private ComboBox<String> sortComboBox;
-    @FXML private Button btnFilter;
-    @FXML private Button btnClearFilter;
 
     /* SIDEBAR */
     @FXML private Button   btnAllTracks;
@@ -51,13 +47,18 @@ public class MainController implements Initializable {
     @FXML private StackPane bottomContainer;
     private Parent playbackBarView;
 
-    // Child controllers (set via loader after swapping views)
+    /* Queue */
+    @FXML private StackPane rightContainer;
+    private Parent queueView = null;
+
+    // Child controllers
     private LibraryController  libraryController;
     private PlaylistController playlistController;
+    private PlaybackBarController playbackBarController;
+    private QueueController queueController;
 
     // Backend facade
     private AudioStorage audioStorage;
-    private PlaybackBarController playbackBarController;
 
     // State
     private Button activeNavButton;   // tracks which sidebar button is highlighted
@@ -73,6 +74,9 @@ public class MainController implements Initializable {
 
         // Mark "All Tracks" as the default active nav item
         setActiveNav(btnAllTracks);
+
+        // Load queue
+        showQueue();
 
         // Load the Library view into CENTER on startup
         showLibrary();
@@ -95,13 +99,7 @@ public class MainController implements Initializable {
             }
         });
 
-        sortComboBox.getItems().addAll(
-                "Title A → Z",
-                "Title Z → A",
-                "Newest first",
-                "Oldest first"
-        );
-        sortComboBox.setValue("Title A → Z");  // default selection
+
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -170,9 +168,31 @@ public class MainController implements Initializable {
             );
             playbackBarView = loader.load();
             playbackBarController = loader.getController();
+
+            // Add main controller to playback
+            playbackBarController.setMainController(this);
+
             bottomContainer.getChildren().setAll(playbackBarView);
         } catch (IOException e) {
             showError("Could not load PlaybackBar view", e);
+        }
+    }
+
+    public void showQueue() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/QueueView.fxml")
+            );
+            queueView = loader.load();
+            queueController = loader.getController();
+
+            if (playbackBarController != null) {
+                queueController.setPlaybackBarController(playbackBarController);
+                playbackBarController.setQueueController(queueController);
+            }
+            rightContainer.getChildren().setAll(queueView);
+        } catch (IOException e) {
+            showError("Could not load QueueView view", e);
         }
     }
 
@@ -191,51 +211,8 @@ public class MainController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleSort() {
-        String selected = sortComboBox.getValue();
-        if (selected == null) return;
 
-        switch (currentView) {
-            case LIBRARY  -> { if (libraryController  != null) libraryController.applySortOrder(selected);  }
-            case PLAYLIST -> { if (playlistController != null) playlistController.applySortOrder(selected); }
-            case NONE     -> { }
-        }
-    }
-
-    @FXML
-    private void handleFilter() {
-        switch (currentView) {
-            case LIBRARY  -> { if (libraryController  != null) libraryController.showFilterDialog();  }
-            case PLAYLIST -> { if (playlistController != null) playlistController.showFilterDialog(); }
-            case NONE     -> {}
-        }
-    }
-
-    public void showClearFilter(String label){
-        btnClearFilter.setText("✕ " + label);
-        btnClearFilter.setVisible(true);
-        btnClearFilter.setManaged(true);
-
-        btnFilter.getStyleClass().add("active");
-    }
-
-    @FXML
-    public void handleClearFilter() {
-        if(libraryController!=null){
-            libraryController.clearFilter();
-        }
-        btnClearFilter.setVisible(false);
-        btnClearFilter.setManaged(false);
-
-        btnFilter.getStyleClass().remove("active");
-    }
-
-
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  SIDEBAR HANDLERS
-    // ─────────────────────────────────────────────────────────────────────────
+    /* Left side */
 
     @FXML
     private void handleNewPlaylist() {
@@ -274,10 +251,22 @@ public class MainController implements Initializable {
         displayedPlaylists.setAll(filtered);
     }
 
+    /* Right side (Queues) */
+    public void toggleQueue() {
+        boolean isHidden = !rightContainer.isVisible();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  HELPERS
-    // ─────────────────────────────────────────────────────────────────────────
+        if (isHidden) {
+            rightContainer.setVisible(true);
+            rightContainer.setManaged(true);
+        }
+        else {
+            rightContainer.setVisible(false);
+            rightContainer.setManaged(false);
+        }
+
+    }
+
+    /* Helpers */
 
     /** Highlights the active sidebar button and removes highlight from previous. */
     private void setActiveNav(Button button) {

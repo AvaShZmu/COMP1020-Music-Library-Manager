@@ -24,10 +24,25 @@
                 text="+ Import Audio"
                 styleClass="btn-primary"
                 onAction="#handleImport"/>
-        <!-- <Button fx:id="btnRemove"
-                text="Remove"
+
+
+        <ComboBox fx:id="sortComboBox"
+                  styleClass="filter-combo"
+                  prefWidth="130"
+                  onAction="#handleSort"/>
+
+        <Button fx:id="btnFilter"
+                text="Filter"
                 styleClass="btn-secondary"
-                onAction="#handleRemove"/> -->
+                onAction="#handleFilter"
+                prefWidth="80"/>
+
+        <Button fx:id="btnClearFilter"
+                text="✕ filter"
+                styleClass="btn-danger"
+                onAction="#handleClearFilter"
+                visible="false"
+                managed="false"/>
     </HBox>
 
     <!-- Card grid -->

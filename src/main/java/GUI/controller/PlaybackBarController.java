@@ -20,17 +20,17 @@ public class PlaybackBarController implements Initializable {
     @FXML private Label nowPlayingTitle;
     @FXML private Label  nowPlayingArtist;
     @FXML private Button btnPlayPause;
-    @FXML private Button btnPrevious;
-    @FXML private Button btnNext;
-    //@FXML private Button btnShuffle;
-    //@FXML private Button btnRepeat;
+    @FXML private Button btnQueue;
+
     @FXML private Slider progressSlider;
     @FXML private Slider volumeSlider;
     @FXML private Label  currentTimeLabel;
     @FXML private Label  totalTimeLabel;
     private Timeline progressTimeline;
 
+    private MainController mainController;
     private LibraryController libraryController;
+    private QueueController queueController;
     private Controller playbackController;
 
     @Override
@@ -63,6 +63,10 @@ public class PlaybackBarController implements Initializable {
 
     // Set up controller
     public void setLibraryController(LibraryController lc) {this.libraryController = lc;}
+
+    public void setQueueController(QueueController qc) {this.queueController = qc;}
+
+    public void setMainController(MainController mc) {this.mainController = mc;}
 
     @FXML
     public void handlePlayPause() {
@@ -156,6 +160,23 @@ public class PlaybackBarController implements Initializable {
         }
         else{
             playbackController.loadSingle(item);
+            queueController.updateQueue(playbackController.getQueue());
+        }
+    }
+
+    public void clearUpcoming() {
+        playbackController.clearUpcoming();
+    }
+
+    public void handleQueueToggle() {
+        if (mainController != null) {
+            mainController.toggleQueue();
+
+            if (btnQueue.getStyleClass().contains("active")) {
+                btnQueue.getStyleClass().remove("active");
+            } else {
+                btnQueue.getStyleClass().add("active");
+            }
         }
     }
 
@@ -170,6 +191,12 @@ public class PlaybackBarController implements Initializable {
         // Update card highlight in library if visible
         if (libraryController != null) {
             libraryController.highlightPlayingCard(current.getTrackID());
+        }
+
+        // Update queue
+        if (queueController != null) {
+            queueController.updateNowPlaying(current);
+            queueController.updateQueue(playbackController.getQueue());
         }
 
         // Restart timeline for new track

@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -12,12 +11,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.ComboBox?>
 <BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.MainController">
 
-    <!-- ═══════════════════════════════════════
-         TOP BAR — search + app title
-         ═══════════════════════════════════════ -->
+    <!-- Top bar -->
     <top>
         <HBox alignment="CENTER_LEFT" spacing="16" styleClass="top-bar">
 
@@ -32,32 +28,10 @@
 
             <!-- Spacer pushes buttons to right -->
             <Region HBox.hgrow="ALWAYS" />
-
-            <!-- Sort + Filter buttons -->
-            <ComboBox fx:id="sortComboBox"
-                      styleClass="filter-combo"
-                      prefWidth="130"
-                      onAction="#handleSort"/>
-
-            <Button fx:id="btnFilter"
-                    text="Filter"
-                    styleClass="btn-secondary"
-                    onAction="#handleFilter"
-                    prefWidth="80"/>
-
-            <Button fx:id="btnClearFilter"
-                    text="✕ filter"
-                    styleClass="btn-danger"
-                    onAction="#handleClearFilter"
-                    visible="false"
-                    managed="false"/>
-
         </HBox>
     </top>
 
-    <!-- ═══════════════════════════════════════
-         LEFT — sidebar navigation
-         ═══════════════════════════════════════ -->
+    <!-- Left bar (Sidebar) -->
     <left>
         <VBox prefWidth="210" spacing="0" styleClass="sidebar">
 
@@ -84,18 +58,19 @@
         </VBox>
     </left>
 
-    <!-- ═══════════════════════════════════════
-         CENTER — swappable content area
-         ═══════════════════════════════════════ -->
+    <!-- Center: LibraryView or PlaylistView -->
     <center>
         <!-- StackPane lets us swap child views by
              calling getChildren().setAll(loader.load()) -->
         <StackPane fx:id="contentArea" styleClass="content-area" />
     </center>
 
-    <!-- ═══════════════════════════════════════
-         BOTTOM — playback bar (always visible)
-         ═══════════════════════════════════════ -->
+    <!-- Right: Queue (toggleable) -->
+    <right>
+        <StackPane fx:id="rightContainer" prefWidth="300" styleClass="queue-container" visible="false" managed="false" />
+    </right>
+
+    <!-- Bottom: Playback navigation -->
     <bottom>
         <StackPane fx:id="bottomContainer" />
     </bottom>

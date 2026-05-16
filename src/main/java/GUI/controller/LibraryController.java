@@ -33,7 +33,9 @@ public class LibraryController implements Initializable{
 
     @FXML private FlowPane cardGrid;
     @FXML private Label trackCountLabel;
-    //@FXML private Button btnRemove;
+    @FXML private ComboBox<String> sortComboBox;
+    @FXML private Button btnFilter;
+    @FXML private Button btnClearFilter;
 
     private final List<AudioItem> masterList = new ArrayList<>();
 
@@ -79,9 +81,16 @@ public class LibraryController implements Initializable{
                 selectedCard = null;
                 selectedItem = null;
 
-                //btnRemove.setDisable(true);
             }
         });
+
+        sortComboBox.getItems().addAll(
+                "Title A → Z",
+                "Title Z → A",
+                "Newest first",
+                "Oldest first"
+        );
+        sortComboBox.setValue("Title A → Z");  // default selection
     }
 
     // Set up the controllers
@@ -333,32 +342,34 @@ public class LibraryController implements Initializable{
         }
     }
 
-    /*
     @FXML
-    private void handleRemove(){
-        if (selectedItem == null) return;
-
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Remove Track");
-        confirm.setHeaderText("Remove \"" + selectedItem.getTitle() + "\"?");
-        confirm.setContentText(
-                "This removes the track from your library. " +
-                        "The original file will not be deleted."
-        );
-
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                masterList.remove(selectedItem);
-                // audioStorage.removeItem(selectedItem); ← Phase 7
-                selectedItem = null;
-                selectedCard = null;
-                // playingCard = null;
-                btnRemove.setDisable(true);
-                applyAll();
-            }
-        });
+    private void handleFilter() {
+        showFilterDialog();
     }
-     */
+
+    public void showClearFilter(String label){
+        btnClearFilter.setText("✕ " + label);
+        btnClearFilter.setVisible(true);
+        btnClearFilter.setManaged(true);
+
+        btnFilter.getStyleClass().add("active");
+    }
+
+    @FXML
+    public void handleClearFilter() {
+        clearFilter();
+        btnClearFilter.setVisible(false);
+        btnClearFilter.setManaged(false);
+        btnFilter.getStyleClass().remove("active");
+    }
+
+    @FXML
+    private void handleSort() {
+        String selected = sortComboBox.getValue();
+        if (selected == null) return;
+
+        applySortOrder(selected);
+    }
 
     public void applySearch(String query) {
         currentQuery = query;
@@ -422,9 +433,7 @@ public class LibraryController implements Initializable{
             filterValue    = genre;
             applyAll();
 
-            if (mainController != null) {
-                mainController.showClearFilter("Genre: " + genre);
-            }
+            showClearFilter("Genre: " + genre);
         });
     }
 
@@ -473,9 +482,7 @@ public class LibraryController implements Initializable{
                     default   -> "Date filter";
                 };
 
-                if (mainController != null) {
-                    mainController.showClearFilter(label);
-                }
+                showClearFilter(label);
             });
         });
     }

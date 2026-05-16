@@ -190,7 +190,7 @@
 /* ── Toolbar ──────────────────────────────────────── */
 .toolbar {
     -fx-background-color: transparent;
-    -fx-padding: 0 28 12 28;
+    -fx-padding: 0 56 12 28;
     -fx-spacing: 10;
     -fx-alignment: CENTER_LEFT;
 }
@@ -275,8 +275,38 @@
     -fx-text-fill: #ff5555 !important;
 }
 
+.queue-clear-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #a7a7a7;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-padding: 0; /* Removes default button padding to align perfectly */
+}
+
+.queue-clear-btn:hover {
+    -fx-text-fill: white;
+    -fx-underline: true;
+}
+
+/* The toggle button on the bottom Playback Bar */
+.btn-queue {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b3b3b3;
+    -fx-font-size: 18px; /* Slightly larger so the ☰ icon is legible */
+    -fx-cursor: hand;
+    -fx-padding: 4px;
+}
+
+.btn-queue.active {
+    -fx-text-fill: #1db954;
+}
+
+.btn-queue:hover {
+    -fx-text-fill: white;
+}
+
 /* =====================================================
-   CARD GRID (Library screen — Phase 3)
+   CARD GRID (Library screen)
    ===================================================== */
 .card-scroll-pane {
     -fx-background-color: transparent;
@@ -290,7 +320,7 @@
 
 .card-grid {
     -fx-background-color: transparent;
-    -fx-padding: 16 28 28 28;
+    -fx-padding: 16 20 20 28;
 }
 
 /* ── Individual track card ────────────────────────── */
@@ -386,6 +416,71 @@
     -fx-text-fill: #333333;
     -fx-font-size: 12px;
     -fx-padding: 6 0 0 0;
+}
+
+/* QUEUE */
+.queue-panel {
+    -fx-background-color: #121212; /* Deep Spotify dark background */
+    -fx-border-color: #282828;     /* Subtle divider line */
+    -fx-border-width: 0 0 0 1;     /* Only show border on the left side */
+}
+
+.queue-header-text {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+
+/* List items */
+.queue-title-text {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.queue-title-text.active {
+    -fx-text-fill: #1db954;
+}
+
+.queue-artist-text {
+    -fx-text-fill: #888888;
+}
+
+
+.queue-art-container {
+    -fx-background-color: #2e2e2e;
+    -fx-background-radius: 8px; /* Matches the clip on the ImageView */
+
+}
+
+.queue-fallback-icon {
+    -fx-text-fill: #555555;
+    -fx-font-size: 22px;
+}
+
+.queue-list {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent; /* Strips out the ugly default grey border */
+}
+
+/* Target the individual rows inside the ListView */
+.queue-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 12px 8px 8px;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+/* Hover effect on cells */
+.queue-list .list-cell:hover {
+    -fx-background-color: #2a2a2a; /* Light gray hover highlight */
+    -fx-background-radius: 6px;    /* Soft rounded edges */
+}
+
+/* Selected item styling (removes the default bright blue block) */
+.queue-list .list-cell:selected {
+    -fx-background-color: #333333;
+    -fx-background-radius: 6px;
 }
 
 /* =====================================================

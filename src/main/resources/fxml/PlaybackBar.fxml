@@ -34,6 +34,7 @@
 
     <HBox alignment="CENTER_RIGHT" prefWidth="180" spacing="8">
         <HBox.margin><Insets right="4" /></HBox.margin>
+        <Button fx:id="btnQueue" text="☰" styleClass="btn-queue" onAction="#handleQueueToggle" />
         <Label styleClass="volume-icon" text="🔉" />
         <Slider fx:id="volumeSlider" max="1" min="0" prefWidth="90" styleClass="volume-slider" value="0.7" />
     </HBox>

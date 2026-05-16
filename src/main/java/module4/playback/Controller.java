@@ -30,6 +30,8 @@ public class Controller {
 
     public void clearQueue() { queue.clear(); }
 
+    public void clearUpcoming() { queue.clearUpcoming(); }
+
     public int getQueueSize() {
         return queue.getQueueSize();
     }

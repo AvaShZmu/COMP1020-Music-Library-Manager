@@ -74,9 +74,20 @@ public class PlaybackQueue {
         return queue.get(index);
     }
 
+    // Used when loading a brand new playlist
     public void clear() {
         queue.clear();
         currIndex = -1;
+    }
+
+    // Will be the main clear operation
+    public void clearUpcoming() {
+        if (queue.isEmpty() || currIndex < 0) {
+            return;
+        }
+        if (queue.size() > currIndex + 1) {
+            queue.subList(currIndex + 1, queue.size()).clear();
+        }
     }
 
     public void buildQueueFromList(List<AudioItem> itemList) {
@@ -89,6 +100,6 @@ public class PlaybackQueue {
 
     public List<AudioItem> getQueue() {
         // only shows audio tracks from the current pointer to end of queue
-        return queue.subList(currIndex, queue.size());
+        return new ArrayList<>(queue.subList(currIndex + 1, queue.size()));
     }
 }
