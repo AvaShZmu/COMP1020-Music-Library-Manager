@@ -67,7 +67,7 @@
 
     <!-- Right: Queue (toggleable) -->
     <right>
-        <StackPane fx:id="rightContainer" prefWidth="300" styleClass="queue-container" visible="false" managed="false" />
+        <StackPane fx:id="rightContainer" prefWidth="280" styleClass="queue-container" visible="false" managed="false" />
     </right>
 
     <!-- Bottom: Playback navigation -->

@@ -461,6 +461,7 @@
 .queue-list {
     -fx-background-color: transparent;
     -fx-border-color: transparent; /* Strips out the ugly default grey border */
+    -fx-size-to-content: true;
 }
 
 /* Target the individual rows inside the ListView */

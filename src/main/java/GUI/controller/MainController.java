@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import module3.storage.AudioStorage;
+import module3.storage.PlaylistStorage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -57,8 +58,9 @@ public class MainController implements Initializable {
     private PlaybackBarController playbackBarController;
     private QueueController queueController;
 
-    // Backend facade
+    // Backend storage
     private AudioStorage audioStorage;
+    private PlaylistStorage playlistStorage;
 
     // State
     private Button activeNavButton;   // tracks which sidebar button is highlighted
@@ -100,6 +102,15 @@ public class MainController implements Initializable {
         });
 
 
+    }
+
+    public void setStorage(AudioStorage audioStorage) {
+        this.audioStorage = audioStorage;
+        //this.playlistStorage = playlistStorage;
+
+        if (libraryController != null) {
+            libraryController.setAudioStorage(audioStorage);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -96,6 +96,13 @@ public class LibraryController implements Initializable{
 
     public void setAudioStorage(AudioStorage as) {
         this.audioStorage = as;
+
+        // Populate the library as soon as MainController passes the storage down
+        if (this.audioStorage != null) {
+            masterList.clear();
+            masterList.addAll(this.audioStorage.getAllItems());
+            applyAll();
+        }
     }
 
     public void setPlaybackBarController(PlaybackBarController pc) {this.playbackBarController = pc;}
@@ -292,6 +299,7 @@ public class LibraryController implements Initializable{
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 masterList.remove(item);
+                audioStorage.removeItem(item);
                 applyAll();
             }
         });

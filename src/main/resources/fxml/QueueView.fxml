@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="320" spacing="20" styleClass="queue-panel"
+<VBox prefWidth="280" spacing="20" styleClass="queue-panel"
       xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="GUI.controller.QueueController">
 
@@ -18,12 +18,11 @@
 
     <VBox spacing="12">
         <Label styleClass="queue-header-text" text="Now playing" />
-        <ListView fx:id="nowPlayingListView" styleClass="queue-list" prefHeight="70">
+        <ListView fx:id="nowPlayingListView" styleClass="queue-list" maxHeight="80">
             <VBox.margin>
                 <Insets left="-10" right="-10" />
             </VBox.margin>
         </ListView>
-
     </VBox>
 
     <HBox alignment="BOTTOM_LEFT">

@@ -1,5 +1,7 @@
 module com.yourname {
         requires com.google.gson;
+        opens module1.audioModel to com.google.gson;
+        opens module2.playlistModel to com.google.gson;
         requires jaudiotagger;
 
         requires javafx.base;
