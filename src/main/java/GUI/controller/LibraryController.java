@@ -210,24 +210,7 @@ public class LibraryController implements Initializable{
             }
         });
 
-        // Play button click logic
-        playButton.setOnMouseClicked(e -> {
-            e.consume();
-
-            if (playingCard == card) {
-                if (playbackBarController != null) {
-                    playbackBarController.handlePlayPause();
-                }
-            }
-            else {
-                // new track
-                if (playbackBarController != null) {
-                    playbackBarController.playTrack(item);
-                }
-            }
-        });
-
-
+        // ContextMenu when right clicking on an item
         ContextMenu menu = new ContextMenu();
         menu.getStyleClass().add("right-click-menu");
         MenuItem remove = new MenuItem("Remove from library");
@@ -238,6 +221,28 @@ public class LibraryController implements Initializable{
         addToQueue.setOnAction(e -> addToQueue(item));
 
         menu.getItems().addAll(remove,addToQueue,addToPlaylist);
+
+        // Play button click logic
+        playButton.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
+                e.consume();
+
+                if (playingCard == card) {
+                    if (playbackBarController != null) {
+                        playbackBarController.handlePlayPause();
+                    }
+                }
+                else {
+                    // new track
+                    if (playbackBarController != null) {
+                        playbackBarController.playTrack(item);
+                    }
+                }
+            }
+            if (e.getButton() == MouseButton.SECONDARY) {
+                menu.show(card, e.getScreenX(), e.getScreenY());
+            }
+        });
 
         card.setOnMouseClicked(event ->{
             if(event.getButton() == MouseButton.PRIMARY) {
