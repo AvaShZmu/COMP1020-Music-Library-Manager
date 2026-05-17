@@ -198,7 +198,11 @@ public class PlaybackBarController implements Initializable {
 
     private void updateNowPlaying() {
         AudioItem current = playbackController.getCurrentTrack();
-        if (current == null) return;
+
+        if (current == null) {
+            endQueue();
+            return;
+        };
 
         nowPlayingTitle.setText(current.getTitle());
         nowPlayingArtist.setText(current.getAuthor());
@@ -217,6 +221,30 @@ public class PlaybackBarController implements Initializable {
 
         // Restart timeline for new track
         startProgressTimeline();
+    }
+
+    // A method to clean up everything after the queue has ended.
+    private void endQueue() {
+        nowPlayingTitle.setText("No track selected");
+        nowPlayingArtist.setText("");
+        btnPlayPause.setText("▶");
+
+        currentTimeLabel.setText("0:00");
+        totalTimeLabel.setText("0:00");
+        progressSlider.setValue(0);
+        updateProgressGradient();
+
+        if (progressTimeline != null) {
+            progressTimeline.stop();
+        }
+
+        if (libraryController != null) {
+            libraryController.highlightPlayingCard(null);
+        }
+
+        if (queueController != null) {
+            queueController.updateNowPlaying(null);
+        }
     }
 
     private void startProgressTimeline() {

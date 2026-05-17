@@ -63,6 +63,9 @@ public class Controller {
     public void playNext() {
         AudioItem nextTrack = queue.getNext();
         if (nextTrack == null) {
+            if (this.onTrackChanged != null) {
+                this.onTrackChanged.run();
+            }
             return;
         }
         startPlayBack(nextTrack);

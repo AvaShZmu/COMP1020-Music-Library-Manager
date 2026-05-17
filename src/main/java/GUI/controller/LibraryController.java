@@ -535,7 +535,6 @@ public class LibraryController implements Initializable{
 
     public void highlightPlayingCard(String trackID) {
         // Clean up prev track
-        playingID = trackID;
         if (playingCard != null) {
             playingCard.getStyleClass().remove("playing");
 
@@ -552,6 +551,13 @@ public class LibraryController implements Initializable{
                 }
             }
         }
+
+        playingID = trackID;
+        playingCard = null;
+        if (trackID == null) {
+            return;
+        }
+
         // Set up new card
         cardGrid.getChildren().stream()
                 .filter(node -> trackID.equals(node.getUserData()))
