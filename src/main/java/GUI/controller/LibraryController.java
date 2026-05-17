@@ -64,12 +64,8 @@ public class LibraryController implements Initializable{
     private enum SortOrder { TITLE_ASC, TITLE_DESC, DATE_ASC, DATE_DESC }
     private SortOrder currentSort = SortOrder.TITLE_ASC;
 
-    // Backend — uncomment once wired in Phase 7
-    // private storage.AudioStorage audioStorage;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //btnRemove.setDisable(true);
         // Load from backend once wired:
         // masterList.addAll(audioStorage.getAllItems());
         // rebuildGrid();

@@ -86,17 +86,26 @@ public class PlaybackBarController implements Initializable {
 
     @FXML
     private void handlePrevious() {
-        if (playbackController.getQueue().size() + 1 == playbackController.getQueueSize()) {
+        if (playbackController.getCurrIndex() == 0) {
             playbackController.startPlayBack(playbackController.getCurrentTrack());
+            return;
         }
         playbackController.playPrevious();
     }
 
     @FXML
     private void handleNext() {
-        if (playbackController.getQueue().isEmpty()) {
-            playbackController.startPlayBack(playbackController.getCurrentTrack());
+        // If last song ends, clicking "next" wont work
+        if (playbackController.getCurrIndex() >= playbackController.getQueueSize()) {
+            return;
         }
+
+        // If last song still playing, clicking "next" restarts song
+        if (playbackController.getCurrIndex() == playbackController.getQueueSize() - 1) {
+            playbackController.startPlayBack(playbackController.getCurrentTrack());
+            return;
+        }
+
         playbackController.playNext();
     }
 
@@ -162,12 +171,13 @@ public class PlaybackBarController implements Initializable {
 
     public void addToQueue(AudioItem item){
         if (playbackController.getCurrentTrack() == null) {
-            playTrack(item);
-        }
-        else{
             playbackController.loadSingle(item);
-            queueController.updateQueue(playbackController.getQueue());
+            playbackController.startPlayBack(playbackController.getCurrentTrack());
         }
+        else {
+            playbackController.loadSingle(item);
+        }
+        queueController.updateQueue(playbackController.getQueue());
     }
 
     public void clearUpcoming() {

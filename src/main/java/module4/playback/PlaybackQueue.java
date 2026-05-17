@@ -46,6 +46,7 @@ public class PlaybackQueue {
 
     public AudioItem getNext() {
         if (queue.isEmpty() || currIndex >= queue.size() - 1) {
+            currIndex = queue.size();
             return null;
         }
         return queue.get(++currIndex);
@@ -99,6 +100,7 @@ public class PlaybackQueue {
     }
 
     public List<AudioItem> getQueue() {
+        if (currIndex + 1 >= queue.size()) { return new ArrayList<>(); }
         // only shows audio tracks from the current pointer to end of queue
         return new ArrayList<>(queue.subList(currIndex + 1, queue.size()));
     }
