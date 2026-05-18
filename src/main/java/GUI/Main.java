@@ -3,9 +3,7 @@ package GUI;
 import GUI.controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import module3.storage.AudioStorage;
 import module3.storage.FileManager;
@@ -16,7 +14,7 @@ import java.io.IOException;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-
+        // Load mainscreen
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/fxml/MainScreen.fxml"));
         Scene scene = new Scene(fxmlLoader.load(),820,480);
 
@@ -33,10 +31,9 @@ public class Main extends Application {
         MainController mainController = fxmlLoader.getController();
         mainController.setStorage(audioStorage);
 
-        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("Music Library Manager");
-        stage.setMinWidth(940);
-        stage.setMinHeight(visualBounds.getHeight());
+        stage.setMinWidth(960);
+        stage.setMinHeight(650);
         stage.setMaximized(true);
 
         stage.setScene(scene);

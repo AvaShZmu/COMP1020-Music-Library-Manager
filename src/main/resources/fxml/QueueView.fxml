@@ -8,6 +8,8 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
 <VBox prefWidth="280" spacing="20" styleClass="queue-panel"
       xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="GUI.controller.QueueController">
@@ -18,11 +20,24 @@
 
     <VBox spacing="12">
         <Label styleClass="queue-header-text" text="Now playing" />
-        <ListView fx:id="nowPlayingListView" styleClass="queue-list" maxHeight="80">
+        <HBox fx:id="nowPlayingBox" alignment="CENTER_LEFT" spacing="12" visible="false" managed="false" styleClass="now-playing-box">
             <VBox.margin>
                 <Insets left="-10" right="-10" />
             </VBox.margin>
-        </ListView>
+            <padding>
+                <Insets bottom="4" left="10" right="10" top="4" />
+            </padding>
+
+            <StackPane maxHeight="48" maxWidth="48" prefHeight="48" prefWidth="48" styleClass="queue-art-container">
+                <Label fx:id="nowPlayingFallback" text="♪" styleClass="queue-fallback-icon" />
+                <ImageView fx:id="nowPlayingCover" fitHeight="48" fitWidth="48" preserveRatio="true" />
+            </StackPane>
+
+            <VBox alignment="CENTER_LEFT">
+                <Label fx:id="nowPlayingTitle" styleClass="queue-title-text, active" text="Title" />
+                <Label fx:id="nowPlayingArtist" styleClass="queue-artist-text" text="Artist" />
+            </VBox>
+        </HBox>
     </VBox>
 
     <HBox alignment="BOTTOM_LEFT">

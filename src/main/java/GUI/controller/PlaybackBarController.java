@@ -1,5 +1,6 @@
 package GUI.controller;
 
+import GUI.controller.util.AsyncImageLoader;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -8,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 import module1.audioModel.AudioItem;
@@ -17,6 +19,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PlaybackBarController implements Initializable {
+    @FXML private Label fallbackIcon;
+    @FXML private ImageView nowPlayingImage;
     @FXML private Label nowPlayingTitle;
     @FXML private Label  nowPlayingArtist;
     @FXML private Button btnPlayPause;
@@ -59,6 +63,12 @@ public class PlaybackBarController implements Initializable {
             updateVolumeGradient();
             updateProgressGradient();
         });
+
+        // Rounded corners for image
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(60, 60);
+        clip.setArcWidth(16);
+        clip.setArcHeight(16);
+        nowPlayingImage.setClip(clip);
     }
 
     // Set up controller
@@ -207,6 +217,7 @@ public class PlaybackBarController implements Initializable {
         nowPlayingTitle.setText(current.getTitle());
         nowPlayingArtist.setText(current.getAuthor());
         btnPlayPause.setText("⏸");
+        AsyncImageLoader.playbarImageLoad(current.getFileLocation(), nowPlayingImage, fallbackIcon, current);
 
         // Update card highlight in library if visible
         if (libraryController != null) {
@@ -225,8 +236,12 @@ public class PlaybackBarController implements Initializable {
 
     // A method to clean up everything after the queue has ended.
     private void endQueue() {
+        nowPlayingImage.setImage(null);
+        nowPlayingImage.setUserData(null); // Clear the identity tag
+        fallbackIcon.setVisible(true);
+
         nowPlayingTitle.setText("No track selected");
-        nowPlayingArtist.setText("");
+        nowPlayingArtist.setText("...");
         btnPlayPause.setText("▶");
 
         currentTimeLabel.setText("0:00");
@@ -247,6 +262,7 @@ public class PlaybackBarController implements Initializable {
         }
     }
 
+    // Helpers
     private void startProgressTimeline() {
         // Stop any existing timeline first
         if (progressTimeline != null) {
@@ -280,7 +296,6 @@ public class PlaybackBarController implements Initializable {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    // Setup methods to apply gradient to progress bar and volume bar
     private void updateVolumeGradient() {
         javafx.scene.Node track = volumeSlider.lookup(".track");
         if (track != null) {

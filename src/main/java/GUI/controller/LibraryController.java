@@ -1,5 +1,6 @@
 package GUI.controller;
 
+import GUI.controller.util.AsyncImageLoader;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -151,26 +152,7 @@ public class LibraryController implements Initializable{
         artPane.getChildren().addAll(icon,  coverView, playButton);
 
         // ── asynchronous album loading
-        CompletableFuture.supplyAsync(() -> {
-            // Fetch raw bytes in the background
-            return MetadataExtractor.getImage(item.getFileLocation());
-
-        }).thenAccept(imageBytes -> {
-            // Update UI on the main thread
-            Platform.runLater(() -> {
-                if (imageBytes != null && imageBytes.length > 0) {
-
-                    // Construct the image
-                    Image image = new Image(new ByteArrayInputStream(imageBytes));
-
-                    // If successful, apply to UI
-                    if (!image.isError() && image.getWidth() > 0) {
-                        coverView.setImage(image);
-                        icon.setVisible(false); // Hide placeholder
-                    }
-                }
-            });
-        });
+        AsyncImageLoader.libraryImageLoad(item.getFileLocation(), coverView, icon);
 
         // ── Title ────────────────────────────────────────────────────────
         Label title = new Label(item.getTitle());

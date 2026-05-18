@@ -431,11 +431,23 @@
     -fx-font-weight: bold;
 }
 
+.now-playing-box {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 12px 8px 8px;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.now-playing-box:hover {
+    -fx-background-color: #2a2a2a; /* Light gray hover highlight */
+    -fx-background-radius: 6px;
+}
 
 /* List items */
 .queue-title-text {
     -fx-text-fill: white;
     -fx-font-size: 14px;
+    -fx-text-overrun: ellipsis;
 }
 
 .queue-title-text.active {
@@ -489,11 +501,21 @@
    ===================================================== */
 .playback-bar {
     -fx-background-color: #0d0d0d;
-    -fx-padding: 0 24 0 24;
+    -fx-padding: 0 15 0 15;
     -fx-pref-height: 80px;
     -fx-alignment: CENTER;
     -fx-border-color: #2a2a2a transparent transparent transparent;
     -fx-border-width: 1 0 0 0;
+}
+
+.now-playing-art-container {
+    -fx-background-color: #2b2b2b; /* A nice dark grey */
+    -fx-background-radius: 8;      /* Rounded corners */
+}
+
+.now-playing-fallback-icon {
+    -fx-text-fill: #757575;        /* Lighter grey for the music note */
+    -fx-font-size: 24px;
 }
 
 .now-playing-title {

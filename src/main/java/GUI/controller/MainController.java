@@ -130,9 +130,9 @@ public class MainController implements Initializable {
                 );
                 libraryView = loader.load();
                 libraryController = loader.getController();
+
                 libraryController.setMainController(this);
                 libraryController.setAudioStorage(audioStorage);
-
                 libraryController.setPlaybackBarController(playbackBarController);
 
                 if (playbackBarView != null) {
@@ -286,13 +286,6 @@ public class MainController implements Initializable {
         }
         button.getStyleClass().add("active");
         activeNavButton = button;
-    }
-
-    /** Formats seconds → "m:ss" string for time labels. */
-    private String formatTime(int totalSeconds) {
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        return String.format("%d:%02d", minutes, seconds);
     }
 
     private void showError(String message, Exception e) {

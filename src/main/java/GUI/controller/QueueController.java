@@ -1,5 +1,5 @@
 package GUI.controller;
-import javafx.application.Platform;
+import GUI.controller.util.AsyncImageLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,43 +7,45 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import module1.audioModel.AudioItem;
-import module5.util.MetadataExtractor;
 
-import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 
 
 public class QueueController implements Initializable {
-    @FXML private ListView<AudioItem> nowPlayingListView;
-    @FXML private ListView<AudioItem> queueListView;
+    // Now Playing
+    @FXML private HBox nowPlayingBox;
+    @FXML private ImageView nowPlayingCover;
+    @FXML private Label nowPlayingFallback;
+    @FXML private Label nowPlayingTitle;
+    @FXML private Label nowPlayingArtist;
 
-    private ObservableList<AudioItem> nowPlayingObservableList;
+    // Queue
+    @FXML private ListView<AudioItem> queueListView;
     private ObservableList<AudioItem> queueObservableList;
 
+    // Controller
     private PlaybackBarController playbackBarController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // bg list containing audio items
-        nowPlayingObservableList = FXCollections.observableArrayList();
+        // Set up now playing image
+        Rectangle clip = new Rectangle(48, 48);
+        clip.setArcWidth(16);
+        clip.setArcHeight(16);
+        nowPlayingCover.setClip(clip);
+
+        // Set up queue observable list
         queueObservableList = FXCollections.observableArrayList();
-
-        // the ListView is to display on UI
         queueListView.setItems(queueObservableList);
-        nowPlayingListView.setItems(nowPlayingObservableList);
-
-        // Defining a custom listcell (each element of a listview)
-        nowPlayingListView.setCellFactory(param -> createCellFactory(true));
-        queueListView.setCellFactory(param -> createCellFactory(false));
+        queueListView.setCellFactory(param -> createCellFactory());
     }
 
     public void setPlaybackBarController(PlaybackBarController pbc) {
@@ -56,9 +58,15 @@ public class QueueController implements Initializable {
 
     public void updateNowPlaying(AudioItem current) {
         if (current != null) {
-            nowPlayingObservableList.setAll(current);
+            // Show the box and update text
+            nowPlayingBox.setVisible(true);
+            nowPlayingBox.setManaged(true);
+            nowPlayingTitle.setText(current.getTitle());
+            nowPlayingArtist.setText(current.getAuthor());
+            AsyncImageLoader.playbarImageLoad(current.getFileLocation(), nowPlayingCover, nowPlayingFallback, current);
         } else {
-            nowPlayingObservableList.clear();
+            nowPlayingBox.setVisible(false);
+            nowPlayingBox.setManaged(false);
         }
     }
 
@@ -69,7 +77,7 @@ public class QueueController implements Initializable {
     }
 
     // Helper method to create cell factory
-    private ListCell<AudioItem> createCellFactory(boolean isPlaying) {
+    private ListCell<AudioItem> createCellFactory() {
         return new ListCell<>() {
             private final HBox root = new HBox(12);
 
@@ -83,6 +91,8 @@ public class QueueController implements Initializable {
             private final VBox textContainer = new VBox();
 
             {
+                root.setMaxWidth(230);
+
                 // Set up grey container
                 artContainer.setPrefSize(48, 48);
                 artContainer.setMinSize(48, 48);
@@ -102,9 +112,6 @@ public class QueueController implements Initializable {
                 artContainer.getChildren().addAll(fallbackIcon, coverArt);
 
                 titleLabel.getStyleClass().add("queue-title-text");
-
-                if (isPlaying) {titleLabel.getStyleClass().add("active");}
-
                 artistLabel.getStyleClass().add("queue-artist-text");
 
                 textContainer.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
@@ -130,12 +137,7 @@ public class QueueController implements Initializable {
                     artistLabel.setText(item.getAuthor());
                     coverArt.setImage(null);
 
-                    CompletableFuture.supplyAsync(() -> MetadataExtractor.getImage(item.getFileLocation()))
-                            .thenAccept(imageBytes -> Platform.runLater(() -> {
-                                if (getItem() == item && imageBytes != null && imageBytes.length > 0) {
-                                    coverArt.setImage(new Image(new ByteArrayInputStream(imageBytes)));
-                                }
-                            }));
+                    AsyncImageLoader.cellImageLoad(item.getFileLocation(), coverArt, fallbackIcon, this, item);
 
                     setGraphic(root);
                 }
