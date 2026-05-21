@@ -8,8 +8,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import module1.audioModel.AudioItem;
+import module2.playlistModel.Playlist;
 import module3.storage.AudioStorage;
 import module3.storage.PlaylistStorage;
+import module5.util.LibraryLogic;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,13 +39,14 @@ public class MainController implements Initializable {
     @FXML private Button   btnAllTracks;
     @FXML private Button   btnFavourites;
     @FXML private TextField playlistSearchField;
-    private final List<String> allPlaylists = new ArrayList<>();
-    private final ObservableList<String> displayedPlaylists = FXCollections.observableArrayList();
-    @FXML private ListView<String> playlistNavList;   // String = playlist title for now
+    private final List<Playlist> allPlaylists = new ArrayList<>();
+    private final ObservableList<Playlist> displayedPlaylists = FXCollections.observableArrayList();
+    @FXML private ListView<Playlist> playlistNavList;
 
     /* CENTER */
     @FXML private StackPane contentArea;
     private Parent libraryView = null;
+    private Parent playlistView = null;
 
     /* Playbar */
     @FXML private StackPane bottomContainer;
@@ -69,8 +73,6 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        audioStorage = new AudioStorage();
-
         // Load bottom bar first
         showPlaybackBar();
 
@@ -83,14 +85,11 @@ public class MainController implements Initializable {
         // Load the Library view into CENTER on startup
         showLibrary();
 
-        // Populate playlist sidebar — replace with real PlaylistStorage data in Phase 6
-        allPlaylists.addAll(List.of("Late Night Jazz", "Workout Mix", "Focus Mode"));
-        displayedPlaylists.setAll(allPlaylists);
-        playlistNavList.setItems(displayedPlaylists);
+
 
         // Clicking a playlist name in the sidebar opens the PlaylistView
         playlistNavList.setOnMouseClicked(event -> {
-            String selected = playlistNavList.getSelectionModel().getSelectedItem();
+            Playlist selected = playlistNavList.getSelectionModel().getSelectedItem();
             currentView = ActiveView.PLAYLIST;
             if (selected != null) {
                 if (activeNavButton != null) {
@@ -104,12 +103,20 @@ public class MainController implements Initializable {
 
     }
 
-    public void setStorage(AudioStorage audioStorage) {
+    public void setStorage(AudioStorage audioStorage, PlaylistStorage playlistStorage) {
         this.audioStorage = audioStorage;
-        //this.playlistStorage = playlistStorage;
+        this.playlistStorage = playlistStorage;
+
 
         if (libraryController != null) {
+            libraryController.setPlaylistStorage(playlistStorage);
             libraryController.setAudioStorage(audioStorage);
+            if (this.playlistStorage != null) {
+                allPlaylists.clear();
+                allPlaylists.addAll(this.playlistStorage.getAllPlaylists());
+            }
+            displayedPlaylists.addAll(allPlaylists);
+            playlistNavList.setItems(displayedPlaylists);
         }
     }
 
@@ -132,7 +139,7 @@ public class MainController implements Initializable {
                 libraryController = loader.getController();
 
                 libraryController.setMainController(this);
-                libraryController.setAudioStorage(audioStorage);
+                //libraryController.setAudioStorage(audioStorage);
                 libraryController.setPlaybackBarController(playbackBarController);
 
                 if (playbackBarView != null) {
@@ -157,18 +164,29 @@ public class MainController implements Initializable {
     }
 
     /** Load PlaylistView.fxml for a specific playlist. */
-    public void showPlaylist(String playlistTitle) {
+    public void showPlaylist(Playlist playlist) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/PlaylistView.fxml")
-            );
-            Parent playlistView = loader.load();
+            if(playlistView == null) {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/fxml/PlaylistView.fxml")
+                );
+                playlistView = loader.load();
+                playlistController = loader.getController();
+
+                //playlistController.setMainController(this);
+                playlistController.setAudioStorage(audioStorage);
+
+                playlistController.setPlaybackBarController(playbackBarController);
+
+                //if (playbackBarView != null) {
+                //    playbackBarController.setLibraryController(libraryController);
+                //}
+            }
             contentArea.getChildren().setAll(playlistView);
-            playlistController = loader.getController();
-            playlistController.loadPlaylist(playlistTitle);
+            playlistController.loadPlaylist(playlist);
 
         } catch (IOException e) {
-            showError("Could not load Playlist view", e);
+            showError("Could not load Library view", e);
         }
     }
 
@@ -234,13 +252,13 @@ public class MainController implements Initializable {
 
         dialog.showAndWait().ifPresent(name -> {
             if (!name.isBlank()) {
-                // backend.createPlaylist(name);          // wire in Phase 6
-                allPlaylists.add(name);
-                displayedPlaylists.add(name);
+                Playlist newPlaylist = new Playlist(name, "mmb", "20 November 2007");
+                playlistStorage.addItem(newPlaylist);
+                allPlaylists.add(newPlaylist);
                 String query = playlistSearchField.getText().trim();
                 searchSidebarPlaylists(query);
-                //playlistNavList.getItems().add(name);    // optimistic UI update
-                showPlaylist(name);
+                playlistNavList.getSelectionModel().select(newPlaylist);
+                showPlaylist(newPlaylist);
             }
         });
     }
@@ -253,13 +271,12 @@ public class MainController implements Initializable {
 
     private void searchSidebarPlaylists(String query) {
         if (query.isBlank()) {
-            displayedPlaylists.setAll(allPlaylists);
+            displayedPlaylists.clear();
+            displayedPlaylists.addAll(allPlaylists);
             return;
         }
-        List<String> filtered = allPlaylists.stream()
-                .filter(name -> name.toLowerCase().contains(query.toLowerCase()))
-                .collect(Collectors.toList());
-        displayedPlaylists.setAll(filtered);
+        displayedPlaylists.clear();
+        displayedPlaylists.addAll(LibraryLogic.search(allPlaylists, query));
     }
 
     /* Right side (Queues) */

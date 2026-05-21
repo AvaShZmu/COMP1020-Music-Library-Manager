@@ -25,7 +25,6 @@
                 styleClass="btn-primary"
                 onAction="#handleImport"/>
 
-
         <ComboBox fx:id="sortComboBox"
                   styleClass="filter-combo"
                   prefWidth="130"

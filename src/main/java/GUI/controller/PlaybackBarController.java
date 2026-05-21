@@ -13,9 +13,11 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 import module1.audioModel.AudioItem;
+import module2.playlistModel.Playlist;
 import module4.playback.Controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class PlaybackBarController implements Initializable {
@@ -187,6 +189,16 @@ public class PlaybackBarController implements Initializable {
         else {
             playbackController.loadSingle(item);
         }
+        queueController.updateQueue(playbackController.getQueue());
+    }
+
+    public void playPlaylist(List<AudioItem> playlist, int index){
+        if(playlist == null) {
+            return;
+        }
+        playbackController.clearQueue();
+        playbackController.loadItems(playlist);
+        playbackController.playIndex(index);
         queueController.updateQueue(playbackController.getQueue());
     }
 

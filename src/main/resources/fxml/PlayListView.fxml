@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" alignment="CENTER" spacing="12" style="-fx-background-color: #0f0f13; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="GUI.controller.PlaylistController">
+<VBox styleClass="content-area" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.PlaylistController">
 
-    <Label style="-fx-font-size: 48px; -fx-text-fill: #2a2a42;" text="≡" />
+    <!-- Header -->
+    <VBox styleClass="content-header">
+        <Label fx:id="playlistTitle" styleClass="content-title" text="Playlist" />
+        <Label fx:id="trackCountLabel" styleClass="content-subtitle" text="0 songs" />
+    </VBox>
 
-    <Label style="-fx-font-size: 15px; -fx-text-fill: #3a3a5a;" text="Playlist view coming in Phase 6" />
+    <!-- Toolbar -->
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar">
+        <Button fx:id="btnPlayAll" onAction="#handlePlayAll" styleClass="btn-primary" text="▶  Play All" />
+        <Region HBox.hgrow="ALWAYS" />
+
+        <ComboBox fx:id="sortComboBox" onAction="#handleSort" prefWidth="130" styleClass="filter-combo" />
+
+        <Button fx:id="btnFilter" onAction="#handleFilter" prefWidth="80" styleClass="btn-secondary" text="Filter" />
+
+        <Button fx:id="btnClearFilter" managed="false" onAction="#handleClearFilter" styleClass="btn-danger" text="✕ filter" visible="false" />
+    </HBox>
+
+    <!-- Track table -->
+    <TableView fx:id="trackTable" styleClass="table-view" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colNumber" text="#" />
+            <TableColumn fx:id="colTitle" text="TITLE" />
+            <TableColumn fx:id="colArtist" text="ARTIST" />
+            <TableColumn fx:id="colGenre" text="GENRE" />
+            <TableColumn fx:id="colDuration" text="DURATION" />
+        </columns>
+        <placeholder>
+            <VBox alignment="CENTER" spacing="10" styleClass="empty-state">
+                <Label styleClass="empty-state-icon" text="♪" />
+                <Label styleClass="empty-state-text" text="This playlist is empty" />
+                <Label styleClass="empty-state-hint" text="Click + Add Track to add songs" />
+            </VBox>
+        </placeholder>
+    </TableView>
 
 </VBox>

@@ -810,6 +810,46 @@
     -fx-background-radius: 6;
 }
 
+/* Fix submenu popup background */
+.context-menu {
+    -fx-background-color: #282828;
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);
+}
+
+.context-menu .menu {
+    -fx-background-color: transparent;
+    -fx-padding: 8 20 8 20;
+    -fx-background-radius: 6;
+}
+
+.context-menu .menu .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.context-menu .menu:focused {
+    -fx-background-color: #3E3E3E;
+    -fx-background-radius: 6;
+}
+
+.context-menu .menu:hover {
+    -fx-background-color: #3E3E3E;
+    -fx-background-radius: 6;
+}
+
+.context-menu .menu:hover .label {
+    -fx-text-fill: white;
+}
+
+/* The submenu popup that appears to the side */
+.context-menu .menu .context-menu {
+    -fx-background-color: #282828;
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
 /* =====================================================
    Sort Combo Box
    ===================================================== */
@@ -889,3 +929,61 @@
     -fx-background-color: #333333 !important;
     -fx-text-fill: #ffffff !important;
 }
+
+/* =====================================================
+   TABLE VIEW (Playlist screen)
+   ===================================================== */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #0d0d0d;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #1e1e1e transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 16 10 16;
+    -fx-size: 38px;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #1a1a1a transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 48px;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #1a1a1a;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #222222;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #ffffff;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 13px;
+    -fx-padding: 0 16 0 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+

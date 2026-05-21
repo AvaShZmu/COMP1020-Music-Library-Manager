@@ -29,7 +29,7 @@ public class Main extends Application {
 
         // Pass to MainController
         MainController mainController = fxmlLoader.getController();
-        mainController.setStorage(audioStorage);
+        mainController.setStorage(audioStorage, playlistStorage);
 
         stage.setTitle("Music Library Manager");
         stage.setMinWidth(960);

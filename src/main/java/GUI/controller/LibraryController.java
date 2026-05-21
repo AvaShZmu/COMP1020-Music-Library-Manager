@@ -26,7 +26,9 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import module2.playlistModel.Playlist;
 import module3.storage.AudioStorage;
+import module3.storage.PlaylistStorage;
 import module5.util.MetadataExtractor;
 import module5.util.LibraryLogic;
 
@@ -51,6 +53,7 @@ public class LibraryController implements Initializable{
     // Reference back to parent so double-click can update the bottom bar
     private MainController mainController;
     private AudioStorage audioStorage;
+    private PlaylistStorage playlistStorage;
     private PlaybackBarController playbackBarController;
 
     // Search
@@ -104,6 +107,10 @@ public class LibraryController implements Initializable{
             masterList.addAll(this.audioStorage.getAllItems());
             applyAll();
         }
+    }
+
+    public void setPlaylistStorage(PlaylistStorage ps){
+        this.playlistStorage = ps;
     }
 
     public void setPlaybackBarController(PlaybackBarController pc) {this.playbackBarController = pc;}
@@ -200,7 +207,28 @@ public class LibraryController implements Initializable{
         menu.getStyleClass().add("right-click-menu");
         MenuItem remove = new MenuItem("Remove from library");
         MenuItem addToQueue = new MenuItem("Add to queue");
-        MenuItem addToPlaylist = new MenuItem("Add to Playlist");
+        Menu addToPlaylist = new Menu("Add to Playlist");
+
+        menu.setOnShowing(e ->{
+            addToPlaylist.getItems().clear();
+            Collection<Playlist> playlists = this.playlistStorage.getAllPlaylists();
+
+            if(playlists.isEmpty()){
+                MenuItem none = new MenuItem("No playlists yet");
+                none.setDisable(true);
+                addToPlaylist.getItems().add(none);
+            }
+            else{
+                for(Playlist pl: playlists){
+                    MenuItem playlistOption = new MenuItem(pl.getTitle());
+                    playlistOption.setOnAction(f ->
+                            pl.addTrack(item));
+                    addToPlaylist.getItems().add(playlistOption);
+                }
+            }
+                });
+
+
 
         remove.setOnAction(e -> handleRemove(item));
         addToQueue.setOnAction(e -> addToQueue(item));
@@ -246,9 +274,10 @@ public class LibraryController implements Initializable{
                     playbackBarController.playTrack(item);
                 }
             }
-            if(event.getButton() == MouseButton.SECONDARY) {
-                menu.show(card, event.getScreenX(), event.getScreenY());
-            }
+        });
+
+        card.setOnContextMenuRequested(event -> {
+            menu.show(card, event.getScreenX(), event.getScreenY());
         });
 
         return card;
@@ -263,7 +292,7 @@ public class LibraryController implements Initializable{
         }
     }
 
-    private void addToQueue(AudioItem item){
+    private void addToQueue(AudioItem item) {
         if (playbackBarController != null) {
             playbackBarController.addToQueue(item);
         }
@@ -282,6 +311,9 @@ public class LibraryController implements Initializable{
             if (response == ButtonType.OK) {
                 masterList.remove(item);
                 audioStorage.removeItem(item);
+                for(Playlist pl : playlistStorage.getAllPlaylists()){
+                    pl.removeTrack(item);
+                }
                 applyAll();
             }
         });
@@ -366,6 +398,7 @@ public class LibraryController implements Initializable{
         currentQuery = query;
         applyAll();
     }
+
     public void applySortOrder(String order)   {
         currentSort = switch (order) {
             case "Title A → Z" -> SortOrder.TITLE_ASC;
@@ -376,6 +409,7 @@ public class LibraryController implements Initializable{
         };
         applyAll();
     }
+
     public void showFilterDialog() {
         ChoiceDialog<String> categoryDialog = new ChoiceDialog<>(
                 "Genre", "Genre", "Date"
