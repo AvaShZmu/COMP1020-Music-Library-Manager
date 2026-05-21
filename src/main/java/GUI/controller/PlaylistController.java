@@ -51,8 +51,8 @@ public class PlaylistController implements Initializable {
     private String filterValue    = null;  // the actual value
 
     // Sort
-    private enum SortOrder { TITLE_ASC, TITLE_DESC, DATE_ASC, DATE_DESC }
-    private SortOrder currentSort = SortOrder.TITLE_ASC;
+    private enum SortOrder { CUSTOM_ORDER, TITLE_ASC, TITLE_DESC, DATE_ASC, DATE_DESC }
+    private SortOrder currentSort = SortOrder.CUSTOM_ORDER;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -86,12 +86,41 @@ public class PlaylistController implements Initializable {
 
         // set sort button
         sortComboBox.getItems().addAll(
+                "Custom Order",
                 "Title A → Z",
-                "Title Z → A",
-                "Newest first",
-                "Oldest first"
+                "Title Z → A"
         );
-        sortComboBox.setValue("Title A → Z");  // default selection
+        sortComboBox.setValue("Custom Order");  // default selection
+
+        // built-in sort of tableview
+        trackTable.setSortPolicy(tv -> {
+            if(tv.getSortOrder().isEmpty()){
+                currentSort = SortOrder.CUSTOM_ORDER;
+                sortComboBox.setValue("Custom Order");
+                applyAll();
+                return true;
+            }
+
+            TableColumn<AudioItem, ?> column = tv.getSortOrder().get(0);
+            boolean ascending =
+                    column.getSortType() == TableColumn.SortType.ASCENDING;
+
+            if (column == colTitle) {
+
+                currentSort = ascending
+                        ? SortOrder.TITLE_ASC
+                        : SortOrder.TITLE_DESC;
+
+                sortComboBox.setValue(
+                        ascending
+                                ? "Title A → Z"
+                                : "Title Z → A"
+                );
+            }
+
+            applyAll();
+            return true;
+        });
 
         // click on the row
         trackTable.setRowFactory(tv -> {
@@ -186,8 +215,8 @@ public class PlaylistController implements Initializable {
         switch (currentSort){
             case TITLE_ASC -> Collections.sort(result);
             case TITLE_DESC -> result.sort((a,b) -> b.compareTo(a));
-            case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
-            case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
+            //case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
+            //case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
         }
 
         // rebuild table
@@ -218,12 +247,23 @@ public class PlaylistController implements Initializable {
     }
 
     public void applySortOrder(String order)   {
-        currentSort = switch (order) {
-            case "Title A → Z" -> SortOrder.TITLE_ASC;
-            case "Title Z → A" -> SortOrder.TITLE_DESC;
-            case "Newest first" -> SortOrder.DATE_DESC;
-            case "Oldest first" -> SortOrder.DATE_ASC;
-            default             -> SortOrder.TITLE_ASC;
+        switch (order) {
+            case "Title A → Z" -> {
+                currentSort = SortOrder.TITLE_ASC;
+                colTitle.setSortType(TableColumn.SortType.ASCENDING);
+
+                trackTable.getSortOrder().setAll(colTitle);
+            }
+            case "Title Z → A" -> {
+                currentSort = SortOrder.TITLE_DESC;
+                colTitle.setSortType(TableColumn.SortType.DESCENDING);
+
+                trackTable.getSortOrder().setAll(colTitle);
+            }
+            default             -> {
+                currentSort = SortOrder.CUSTOM_ORDER;
+                trackTable.getSortOrder().clear();
+            }
         };
         applyAll();
     }
