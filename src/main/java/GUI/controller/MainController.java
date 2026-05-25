@@ -18,6 +18,8 @@ import module5.util.LibraryLogic;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -86,8 +88,6 @@ public class MainController implements Initializable {
         // Load the Library view into CENTER on startup
         showLibrary();
 
-
-
         // Clicking a playlist name in the sidebar opens the PlaylistView
         playlistNavList.setOnMouseClicked(event -> {
             Playlist selected = playlistNavList.getSelectionModel().getSelectedItem();
@@ -139,9 +139,9 @@ public class MainController implements Initializable {
     private void handleRemovePlaylist(Playlist playlist){
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Remove Playlist");
-        confirm.setHeaderText("Remove \"" + playlist + "\"?");
+        confirm.setHeaderText("Remove \"" + playlist.getTitle() + "\"?");
         confirm.setContentText(
-                "This removes the playlist from your library. "
+                "This removes this playlist from your library. "
         );
 
         confirm.showAndWait().ifPresent(response -> {
@@ -293,7 +293,9 @@ public class MainController implements Initializable {
 
         dialog.showAndWait().ifPresent(name -> {
             if (!name.isBlank()) {
-                Playlist newPlaylist = new Playlist(name, "mmb", "20 November 2007");
+                Playlist newPlaylist = new Playlist(name,
+                        "Write description here.",
+                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
                 playlistStorage.addItem(newPlaylist);
                 allPlaylists.add(newPlaylist);
                 String query = playlistSearchField.getText().trim();

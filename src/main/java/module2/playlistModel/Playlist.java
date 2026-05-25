@@ -90,6 +90,7 @@ public class Playlist implements Searchable, Filterable, Comparable<Playlist> {
     public String getPlaylistID() { return playlistID; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
+    public String getDateCreated() { return dateCreated; }
 
     // Setters
     public void setTitle(String title) { this.title = title; }

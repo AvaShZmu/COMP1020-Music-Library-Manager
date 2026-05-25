@@ -33,6 +33,9 @@ public class PlaylistController implements Initializable {
     @FXML private Button btnClearFilter;
     @FXML private Button btnFilter;
     @FXML private ComboBox<String> sortComboBox;
+    @FXML private Label playlistDesc;
+    @FXML private Label playlistDateLabel;
+    @FXML private TextField descField;
 
     private Playlist playlist;
     private List<AudioItem> masterList = new ArrayList<>();
@@ -51,7 +54,7 @@ public class PlaylistController implements Initializable {
     private String filterValue    = null;  // the actual value
 
     // Sort
-    private enum SortOrder { CUSTOM_ORDER, TITLE_ASC, TITLE_DESC, DATE_ASC, DATE_DESC }
+    private enum SortOrder { CUSTOM_ORDER, TITLE_ASC, TITLE_DESC, DURATION_ASC, DURATION_DESC }
     private SortOrder currentSort = SortOrder.CUSTOM_ORDER;
 
     @Override
@@ -60,10 +63,10 @@ public class PlaylistController implements Initializable {
         trackTable.widthProperty().addListener((obs, oldVal, newVal) -> {
             double width = newVal.doubleValue();
             colNumber.setPrefWidth(width * 0.06);
-            colTitle.setPrefWidth(width * 0.36);
+            colTitle.setPrefWidth(width * 0.30);
             colArtist.setPrefWidth(width * 0.28);
             colGenre.setPrefWidth(width * 0.20);
-            colDuration.setPrefWidth(width * 0.10);
+            colDuration.setPrefWidth(width * 0.16);
         });
 
         // Bind columns to AudioItem getters
@@ -88,7 +91,9 @@ public class PlaylistController implements Initializable {
         sortComboBox.getItems().addAll(
                 "Custom Order",
                 "Title A → Z",
-                "Title Z → A"
+                "Title Z → A",
+                "Longest First",
+                "Shortest First"
         );
         sortComboBox.setValue("Custom Order");  // default selection
 
@@ -115,6 +120,19 @@ public class PlaylistController implements Initializable {
                         ascending
                                 ? "Title A → Z"
                                 : "Title Z → A"
+                );
+            }
+
+            if (column == colDuration) {
+
+                currentSort = ascending
+                        ? SortOrder.DURATION_ASC
+                        : SortOrder.DURATION_DESC;
+
+                sortComboBox.setValue(
+                        ascending
+                                ? "Shortest First"
+                                : "Longest First"
                 );
             }
 
@@ -153,6 +171,41 @@ public class PlaylistController implements Initializable {
 
         applyAll();
         trackTable.setItems(displayList);
+
+        playlistDesc.setOnMouseClicked(event -> {
+
+            if(event.getClickCount() == 2) {
+
+                descField.setText(playlistDesc.getText());
+
+                playlistDesc.setVisible(false);
+
+                descField.setVisible(true);
+
+                descField.requestFocus();
+            }
+        });
+
+        descField.setOnAction(e -> saveEdit());
+
+        descField.focusedProperty().addListener((obs, oldV, focused) -> {
+            if(!focused) {
+                saveEdit();
+            }
+        });
+    }
+
+    private void saveEdit() {
+
+        String newText = descField.getText();
+
+        if(!newText.isBlank()) {
+            playlistDesc.setText(newText);
+        }
+
+        descField.setVisible(false);
+
+        playlistDesc.setVisible(true);
     }
 
     public void setAudioStorage(AudioStorage audioStorage) {
@@ -181,6 +234,8 @@ public class PlaylistController implements Initializable {
     public void loadPlaylist(Playlist playlist){
         this.playlist = playlist;
         playlistTitle.setText(playlist.getTitle());
+        playlistDesc.setText(playlist.getDescription());
+        playlistDateLabel.setText("Created: " + playlist.getDateCreated());
 
         masterList.clear();
         for(String trackID : playlist.getTracks()){
@@ -215,8 +270,8 @@ public class PlaylistController implements Initializable {
         switch (currentSort){
             case TITLE_ASC -> Collections.sort(result);
             case TITLE_DESC -> result.sort((a,b) -> b.compareTo(a));
-            //case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
-            //case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
+            case DURATION_ASC -> result.sort(Comparator.comparing(AudioItem::getDuration));
+            case DURATION_DESC -> result.sort(Comparator.comparing(AudioItem::getDuration).reversed());
         }
 
         // rebuild table
@@ -259,6 +314,18 @@ public class PlaylistController implements Initializable {
                 colTitle.setSortType(TableColumn.SortType.DESCENDING);
 
                 trackTable.getSortOrder().setAll(colTitle);
+            }
+            case "Longest First" -> {
+                currentSort = SortOrder.DURATION_DESC;
+                colDuration.setSortType(TableColumn.SortType.DESCENDING);
+
+                trackTable.getSortOrder().setAll(colDuration);
+            }
+            case "Shortest First" -> {
+                currentSort = SortOrder.DURATION_ASC;
+                colDuration.setSortType(TableColumn.SortType.ASCENDING);
+
+                trackTable.getSortOrder().setAll(colDuration);
             }
             default             -> {
                 currentSort = SortOrder.CUSTOM_ORDER;

@@ -9,12 +9,16 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextField?>
 <VBox styleClass="content-area" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.PlaylistController">
 
     <!-- Header -->
     <VBox styleClass="content-header">
         <Label fx:id="playlistTitle" styleClass="content-title" text="Playlist" />
         <Label fx:id="trackCountLabel" styleClass="content-subtitle" text="0 songs" />
+        <Label fx:id="playlistDateLabel"  styleClass="content-subtitle"      text="" />
+        <Label fx:id="playlistDesc"       styleClass="content-subtitle" text="" />
+        <TextField fx:id="descField" styleClass="content-subtitle" visible="false" />
     </VBox>
 
     <!-- Toolbar -->
@@ -22,7 +26,7 @@
         <Button fx:id="btnPlayAll" onAction="#handlePlayAll" styleClass="btn-primary" text="▶  Play All" />
         <Region HBox.hgrow="ALWAYS" />
 
-        <ComboBox fx:id="sortComboBox" onAction="#handleSort" prefWidth="130" styleClass="filter-combo" />
+        <ComboBox fx:id="sortComboBox" onAction="#handleSort" prefWidth="150" styleClass="filter-combo" />
 
         <Button fx:id="btnFilter" onAction="#handleFilter" prefWidth="80" styleClass="btn-secondary" text="Filter" />
 
