@@ -40,8 +40,6 @@
 
             <Button fx:id="btnAllTracks" maxWidth="Infinity" onAction="#showLibrary" styleClass="nav-item" text="♪   All Tracks" />
 
-            <Button fx:id="btnFavourites" maxWidth="Infinity" onAction="#showFavourites" styleClass="nav-item" text="♥   Favourites" />
-
             <!-- PLAYLISTS section -->
             <Label styleClass="nav-section-header" text="PLAYLISTS" />
          <TextField fx:id="playlistSearchField" onKeyReleased="#handlePlaylistSearch" promptText="Search playlists..." styleClass="sidebar-search" />

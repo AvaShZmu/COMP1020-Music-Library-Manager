@@ -1,5 +1,6 @@
 package GUI.controller;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import module1.audioModel.AudioItem;
 import module2.playlistModel.Playlist;
@@ -37,7 +39,6 @@ public class MainController implements Initializable {
 
     /* SIDEBAR */
     @FXML private Button   btnAllTracks;
-    @FXML private Button   btnFavourites;
     @FXML private TextField playlistSearchField;
     private final List<Playlist> allPlaylists = new ArrayList<>();
     private final ObservableList<Playlist> displayedPlaylists = FXCollections.observableArrayList();
@@ -90,17 +91,67 @@ public class MainController implements Initializable {
         // Clicking a playlist name in the sidebar opens the PlaylistView
         playlistNavList.setOnMouseClicked(event -> {
             Playlist selected = playlistNavList.getSelectionModel().getSelectedItem();
-            currentView = ActiveView.PLAYLIST;
-            if (selected != null) {
-                if (activeNavButton != null) {
-                    activeNavButton.getStyleClass().remove("active");
-                    activeNavButton = null;
+            if(event.getButton() == MouseButton.PRIMARY){
+                currentView = ActiveView.PLAYLIST;
+                if (selected != null) {
+                    if (activeNavButton != null) {
+                        activeNavButton.getStyleClass().remove("active");
+                        activeNavButton = null;
+                    }
+                    showPlaylist(selected);
                 }
-                showPlaylist(selected);
             }
         });
 
+        playlistNavList.setCellFactory(lv -> {
+            ListCell<Playlist> cell = new ListCell<>();
 
+            cell.textProperty().bind(
+                    Bindings.createStringBinding(() -> {
+                        Playlist item = cell.getItem();
+                        return item == null ? "" : item.getTitle();
+                    }, cell.itemProperty())
+            );
+
+            ContextMenu menu = new ContextMenu();
+
+            MenuItem remove = new MenuItem("Remove playlist");
+
+            remove.setOnAction(e -> {
+                Playlist item = cell.getItem();
+                if (item != null) {
+                    handleRemovePlaylist(item);
+                }
+            });
+
+            menu.getItems().add(remove);
+
+            cell.contextMenuProperty().bind(
+                    Bindings.when(cell.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(menu)
+            );
+
+            return cell;
+        });
+    }
+
+    private void handleRemovePlaylist(Playlist playlist){
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Remove Playlist");
+        confirm.setHeaderText("Remove \"" + playlist + "\"?");
+        confirm.setContentText(
+                "This removes the playlist from your library. "
+        );
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                playlistStorage.removeItem(playlist);
+                allPlaylists.remove(playlist);
+                String query = playlistSearchField.getText().trim();
+                searchSidebarPlaylists(query);
+            }
+        });
     }
 
     public void setStorage(AudioStorage audioStorage, PlaylistStorage playlistStorage) {
@@ -151,16 +202,6 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             showError("Could not load Library view", e);
         }
-    }
-
-    /** Load LibraryView filtered to favourites. */
-    @FXML
-    public void showFavourites() {
-        currentView = ActiveView.LIBRARY;
-        playlistNavList.getSelectionModel().clearSelection();
-        setActiveNav(btnFavourites);
-        // For now, reuse LibraryView — in Phase 3 pass a filter flag
-        showLibrary();
     }
 
     /** Load PlaylistView.fxml for a specific playlist. */

@@ -252,9 +252,6 @@ public class LibraryController implements Initializable{
                     }
                 }
             }
-            if (e.getButton() == MouseButton.SECONDARY) {
-                menu.show(card, e.getScreenX(), e.getScreenY());
-            }
         });
 
         card.setOnMouseClicked(event ->{
@@ -528,13 +525,11 @@ public class LibraryController implements Initializable{
         if(!currentQuery.isBlank()){
             result = LibraryLogic.search(masterList, currentQuery);
         }
-        System.out.println("After search: " + result.size());
 
         // apply filter using passesFilter()
         if(filterCategory!=null){
-            result = LibraryLogic.filter(masterList, filterCategory, filterOperator, filterValue);
+            result = LibraryLogic.filter(result, filterCategory, filterOperator, filterValue);
         }
-        System.out.println("After apply filter: " + result.size());
 
         // apply sort using compareTo()
         switch (currentSort){
@@ -543,7 +538,7 @@ public class LibraryController implements Initializable{
             case DATE_ASC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate));
             case DATE_DESC -> result.sort(Comparator.comparing(AudioItem::getReleaseDate).reversed());
         }
-        System.out.println("After sorting: " + result.size());
+
         // rebuild grid
         cardGrid.getChildren().clear();
         for (AudioItem item : result) {
