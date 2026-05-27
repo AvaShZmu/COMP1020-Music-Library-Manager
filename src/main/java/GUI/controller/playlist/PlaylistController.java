@@ -86,7 +86,9 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
             if (event.getClickCount() == 2) {
                 descField.setText(playlistDesc.getText());
                 playlistDesc.setVisible(false);
+                playlistDesc.setManaged(false);
                 descField.setVisible(true);
+                descField.setManaged(true);
                 descField.requestFocus();
             }
         });
@@ -110,8 +112,10 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         }
 
         descField.setVisible(false);
+        descField.setManaged(false);
 
         playlistDesc.setVisible(true);
+        playlistDesc.setManaged(true);
     }
 
     public void setAudioStorage(AudioStorage audioStorage) {

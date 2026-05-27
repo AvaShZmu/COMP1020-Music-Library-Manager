@@ -28,7 +28,7 @@ public class CardBuildUtil {
     }
 
     static protected VBox buildCard(AudioItem item, PlaylistStorage playlistStorage, PlaybackBarController playbackBarController, VBox playingCard, CardInteractionListener listener) {
-        // ── Art square ───────────────────────────────────────────────────
+        // Art square
         StackPane artPane = new StackPane();
         artPane.getStyleClass().add("card-art");
 

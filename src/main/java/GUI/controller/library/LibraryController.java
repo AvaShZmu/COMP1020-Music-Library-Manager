@@ -23,6 +23,7 @@ import module5.util.LibraryLogic;
 
 public class LibraryController implements Initializable, CardBuildUtil.CardInteractionListener, FilterDialog.FilterListener {
 
+    @FXML private VBox libraryView;
     @FXML private FlowPane cardGrid;
     @FXML private Label trackCountLabel;
     @FXML private ComboBox<String> sortComboBox;
@@ -55,10 +56,7 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load from backend once wired:
-        // masterList.addAll(audioStorage.getAllItems());
-        // rebuildGrid();
-        cardGrid.setOnMouseClicked(event -> {
+        libraryView.setOnMouseClicked(event -> {
             if (selectedCard != null) {
 
                 selectedCard.getStyleClass().remove("selected");

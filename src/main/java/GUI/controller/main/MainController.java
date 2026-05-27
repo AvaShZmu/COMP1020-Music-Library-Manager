@@ -118,6 +118,7 @@ public class MainController implements Initializable {
             ContextMenu menu = new ContextMenu();
 
             MenuItem remove = new MenuItem("Remove playlist");
+            MenuItem rename = new MenuItem("Rename playlist");
 
             remove.setOnAction(e -> {
                 Playlist item = cell.getItem();
@@ -126,7 +127,26 @@ public class MainController implements Initializable {
                 }
             });
 
-            menu.getItems().add(remove);
+            rename.setOnAction(e -> {
+                Playlist item = cell.getItem();
+                if(item != null) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("Rename Playlist");
+                    dialog.setHeaderText("Rename this playlist");
+                    dialog.setContentText("Playlist name:");
+
+                    dialog.showAndWait().ifPresent(name -> {
+                        if (!name.isBlank()) {
+                            item.setTitle(name);
+                            String query = playlistSearchField.getText().trim();
+                            searchSidebarPlaylists(query);
+                            showPlaylist(item);
+                        }
+                    });
+                }
+            });
+
+            menu.getItems().addAll(remove, rename);
 
             cell.contextMenuProperty().bind(
                     Bindings.when(cell.emptyProperty())
