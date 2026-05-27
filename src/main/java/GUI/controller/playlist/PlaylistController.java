@@ -106,6 +106,7 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
 
         if(!newText.isBlank()) {
             playlistDesc.setText(newText);
+            playlist.setDescription(newText);
         }
 
         descField.setVisible(false);
