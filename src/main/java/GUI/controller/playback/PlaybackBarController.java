@@ -1,5 +1,8 @@
-package GUI.controller;
+package GUI.controller.playback;
 
+import GUI.controller.queue.QueueController;
+import GUI.controller.library.LibraryController;
+import GUI.controller.main.MainController;
 import GUI.controller.util.AsyncImageLoader;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -13,12 +16,13 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 import module1.audioModel.AudioItem;
-import module2.playlistModel.Playlist;
 import module4.playback.Controller;
+import static module5.util.LibraryLogic.formatTime;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
 
 public class PlaybackBarController implements Initializable {
     @FXML private Label fallbackIcon;
@@ -300,12 +304,6 @@ public class PlaybackBarController implements Initializable {
         // Update time labels
         currentTimeLabel.setText(formatTime((int) current));
         totalTimeLabel.setText(formatTime((int) total));
-    }
-
-    private String formatTime(int totalSeconds) {
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        return String.format("%d:%02d", minutes, seconds);
     }
 
     private void updateVolumeGradient() {

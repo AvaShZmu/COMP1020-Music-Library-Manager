@@ -12,7 +12,7 @@
 <?import javafx.scene.image.ImageView?>
 <VBox prefWidth="280" spacing="20" styleClass="queue-panel"
       xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="GUI.controller.QueueController">
+      fx:controller="GUI.controller.queue.QueueController">
 
     <padding>
         <Insets bottom="16" left="16" right="16" top="24" />

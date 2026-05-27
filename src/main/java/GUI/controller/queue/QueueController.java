@@ -1,4 +1,5 @@
-package GUI.controller;
+package GUI.controller.queue;
+import GUI.controller.playback.PlaybackBarController;
 import GUI.controller.util.AsyncImageLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

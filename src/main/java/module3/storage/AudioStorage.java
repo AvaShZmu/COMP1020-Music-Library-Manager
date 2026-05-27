@@ -19,6 +19,10 @@ public class AudioStorage {
         audioLibrary.remove(item.getTrackID());
     }
 
+    public void updateItem(AudioItem updatedItem) {
+        audioLibrary.put(updatedItem.getTrackID(), updatedItem);
+    }
+
     public AudioItem getItem(String trackID) {
         return audioLibrary.get(trackID);
     }

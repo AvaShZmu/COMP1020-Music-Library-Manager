@@ -12,7 +12,7 @@
 <HBox fx:id="playbackBar" alignment="CENTER" prefHeight="88" spacing="0"
       styleClass="playback-bar"
       xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="GUI.controller.PlaybackBarController">
+      fx:controller="GUI.controller.playback.PlaybackBarController">
 
     <HBox alignment="CENTER_LEFT" prefWidth="250" spacing="12">
         <StackPane maxHeight="60" maxWidth="60" prefHeight="60" prefWidth="60" styleClass="now-playing-art-container">

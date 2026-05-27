@@ -1,28 +1,32 @@
-package GUI.controller;
+package GUI.controller.util.dialog;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import module1.audioModel.AudioItem;
 
 public class TrackEditDialog extends Dialog<AudioItem> {
+    public enum Mode { IMPORT, EDIT }
 
-    public TrackEditDialog(AudioItem draftItem) {
-        setTitle("Review Track Info");
-        setHeaderText("Confirm or edit the metadata before importing.");
+    public TrackEditDialog(AudioItem draftItem, Mode mode) {
+        if (mode == Mode.IMPORT) {
+            setTitle("Review Track Info");
+            setHeaderText("Confirm or edit the metadata before importing.");
+        } else {
+            setTitle("Edit Track Info");
+            setHeaderText("Update the metadata for this track.");
+        }
 
-        // 1. Setup the UI Grid
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        // 2. Create the TextFields and pre-fill them with the draft data
         TextField titleField = new TextField(draftItem.getTitle());
         TextField artistField = new TextField(draftItem.getAuthor());
         TextField genreField = new TextField(draftItem.getGenre() != null ? draftItem.getGenre() : "Unknown");
         TextField releaseDateField = new TextField(draftItem.getReleaseDate() != null ? draftItem.getReleaseDate() : "1970");
 
-        // 3. Add labels and fields to the Grid
         grid.add(new Label("Title:"), 0, 0);
         grid.add(titleField, 1, 0);
         grid.add(new Label("Artist:"), 0, 1);
@@ -34,21 +38,21 @@ public class TrackEditDialog extends Dialog<AudioItem> {
 
         getDialogPane().setContent(grid);
 
-        // 4. Add standard Save and Cancel buttons
-        ButtonType saveButtonType = new ButtonType("Import", ButtonBar.ButtonData.OK_DONE);
-        getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+        // Change text based on mode
+        String buttonText = (mode == Mode.IMPORT) ? "Import" : "Save";
+        ButtonType actionButtonType = new ButtonType(buttonText, ButtonBar.ButtonData.OK_DONE);
 
-        // 5. Convert the user's input back into an AudioItem when they click Save
+        getDialogPane().getButtonTypes().addAll(actionButtonType, ButtonType.CANCEL);
+
         setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                // Update the draft item with the user's new text
+            if (dialogButton == actionButtonType) {
                 draftItem.setTitle(titleField.getText().trim());
                 draftItem.setAuthor(artistField.getText().trim());
                 draftItem.setGenre(genreField.getText().trim());
                 draftItem.setReleaseDate(releaseDateField.getText().trim());
-                return draftItem; // Send back to controller
+                return draftItem;
             }
-            return null; // If clicked cancel
+            return null;
         });
     }
 }

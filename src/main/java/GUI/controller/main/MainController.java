@@ -1,5 +1,9 @@
-package GUI.controller;
+package GUI.controller.main;
 
+import GUI.controller.playback.PlaybackBarController;
+import GUI.controller.playlist.PlaylistController;
+import GUI.controller.queue.QueueController;
+import GUI.controller.library.LibraryController;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +14,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import module1.audioModel.AudioItem;
 import module2.playlistModel.Playlist;
 import module3.storage.AudioStorage;
 import module3.storage.PlaylistStorage;
@@ -23,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * MainController — owns the BorderPane shell.*
@@ -60,7 +62,7 @@ public class MainController implements Initializable {
     private Parent queueView = null;
 
     // Child controllers
-    private LibraryController  libraryController;
+    private LibraryController libraryController;
     private PlaylistController playlistController;
     private PlaybackBarController playbackBarController;
     private QueueController queueController;
