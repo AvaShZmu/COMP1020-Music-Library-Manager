@@ -8,7 +8,7 @@ import interfaces.Searchable;
 import module5.util.LibraryLogic;
 
 
-public class Playlist implements Searchable, Filterable, Comparable<Playlist> {
+public class Playlist implements Searchable, Filterable {
     protected String playlistID;
     protected String title;
     protected String description;
@@ -79,10 +79,6 @@ public class Playlist implements Searchable, Filterable, Comparable<Playlist> {
             return LibraryLogic.compareNumbers(actualDate, operator, targetDate);
         }
         return false;
-    }
-
-    public int compareTo(Playlist other) {
-        return this.title.compareToIgnoreCase(other.title);
     }
 
     // Getters
