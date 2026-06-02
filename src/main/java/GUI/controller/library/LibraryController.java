@@ -62,15 +62,17 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
     private VBox playingCard  = null;
     private String playingID = null;
 
-    private MainController mainController;
-    private AudioStorage audioStorage;
-    private PlaylistStorage playlistStorage;
-    private PlaybackBarController playbackBarController;
-
     private String currentQuery = "";
     private String filterCategory = null;  // "genre" or "releaseDate"
     private String filterOperator = null;  // "=" for genre, ">=" "<=" "=" for date
     private String filterValue    = null;  // the actual value
+
+    /* Controllers */
+
+    private MainController mainController;
+    private AudioStorage audioStorage;
+    private PlaylistStorage playlistStorage;
+    private PlaybackBarController playbackBarController;
 
     /* Controller initialization, dependency injection */
 

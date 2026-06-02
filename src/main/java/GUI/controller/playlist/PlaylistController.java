@@ -2,69 +2,109 @@ package GUI.controller.playlist;
 
 import GUI.controller.playback.PlaybackBarController;
 import GUI.controller.util.dialog.FilterDialog;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
 import module1.audioModel.AudioItem;
 import module2.playlistModel.Playlist;
 import module3.storage.AudioStorage;
 import module5.util.LibraryLogic;
-
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
+
+/**
+ * This is the UI controller that manages the detailed view of a single playlist.
+ * <p>
+ *     This class handles the rendering of the track table, inline playlist metadata
+ *     editing (e.g., renaming description), manage local search, filter and sort specific to
+ *     the active playlist.
+ * </p>
+ */
 
 public class PlaylistController implements Initializable, TableBuildUtil.TableInteractionListener, FilterDialog.FilterListener {
 
-    // FXML fields
+    /* FXML Bindings */
+
+    /** The primary data grid that displays the list of tracks in the playlist. */
     @FXML private TableView<AudioItem> trackTable;
+
+    /** Table column displaying the index of the track. */
     @FXML private TableColumn<AudioItem, Integer> colNumber;
-    @FXML private TableColumn<AudioItem, String>    colTitle;
-    @FXML private TableColumn<AudioItem, String>    colArtist;
-    @FXML private TableColumn<AudioItem, String>    colGenre;
-    @FXML private TableColumn<AudioItem, String>    colDuration;
+
+    /** Table column displaying the title of the track. */
+    @FXML private TableColumn<AudioItem, String>  colTitle;
+
+    /** Table column displaying the author or artist of the track. */
+    @FXML private TableColumn<AudioItem, String>  colArtist;
+
+    /** Table column displaying the genre of the track. */
+    @FXML private TableColumn<AudioItem, String>  colGenre;
+
+    /** Table column displaying the formatted duration of the track. */
+    @FXML private TableColumn<AudioItem, String>  colDuration;
+
+    /** The large header label displaying the playlist's name. */
     @FXML private Label playlistTitle;
+
+    /** Label displaying the current number of tracks visible in the table. */
     @FXML private Label trackCountLabel;
+
+    /** Button used to clear active filters and restore the full tracklist view. */
     @FXML private Button btnClearFilter;
+
+    /** Button used to open the metadata filter dialogue popup. */
     @FXML private Button btnFilter;
+
+    /** Dropdown menu for selecting sorting criteria (e.g., "Shortest First", "Title A-Z"). */
     @FXML private ComboBox<String> sortComboBox;
+
+    /** Label displaying the user-created description of the playlist. Double-clickable for editing. */
     @FXML private Label playlistDesc;
+
+    /** Label displaying the system-generated creation date of the playlist. */
     @FXML private Label playlistDateLabel;
+
+    /** A hidden text field that replaces {@code playlistDesc} during inline editing. */
     @FXML private TextField descField;
 
+    /* State Variables */
+
+    /** The actual playlist object currently being viewed. */
     private Playlist playlist;
+
+    /** The master backend list of all tracks belonging to this playlist. */
     private List<AudioItem> masterList = new ArrayList<>();
-    private ObservableList<AudioItem> displayList
-            = FXCollections.observableArrayList();
+
+    /** The frontend list bound directly to the {@code trackTable} for UI updates. */
+    private ObservableList<AudioItem> displayList = FXCollections.observableArrayList();
 
     private AudioStorage audioStorage;
     private PlaybackBarController playbackBarController;
 
-    // Search
     private String currentQuery = "";
+    private String filterCategory = null;
+    private String filterOperator = null;
+    private String filterValue    = null;
 
-    // Filter — matches passesFilter(category, operator, value) signature
-    private String filterCategory = null;  // "genre" or "releaseDate"
-    private String filterOperator = null;  // "=" for genre, ">=" "<=" "=" for date
-    private String filterValue    = null;  // the actual value
+    /* Initialization */
 
+    /**
+     * Invoked by JavaFX upon FXML load.
+     * Configures the initial table structure, sort bindings, and inline editing listeners.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Build table using util class TableBuildUtil
         TableBuildUtil.setupTable(trackTable, colNumber, colTitle, colArtist, colGenre, colDuration, playlist, this);
         trackTable.setItems(displayList);
 
-        // Setup the sort combobox
+        // Set up the sort combo box
         sortComboBox.getItems().addAll("Custom Order", "Title A → Z", "Title Z → A", "Longest First", "Shortest First");
         sortComboBox.setValue("Custom Order");
 
-        // Sync TableView's built-in column arrows with the combobox
+        // Sync TableView's built-in column arrows with the combo box
         trackTable.setSortPolicy(tv -> {
             if (tv.getSortOrder().isEmpty()) {
                 sortComboBox.setValue("Custom Order");
@@ -81,7 +121,7 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
             return true;
         });
 
-        // Setup editing for description
+        // Set up editing for description
         playlistDesc.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 descField.setText(playlistDesc.getText());
@@ -102,45 +142,23 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         });
     }
 
-    private void saveEdit() {
+    /* Set up dependencies */
 
-        String newText = descField.getText();
-
-        if(!newText.isBlank()) {
-            playlistDesc.setText(newText);
-            playlist.setDescription(newText);
-        }
-
-        descField.setVisible(false);
-        descField.setManaged(false);
-
-        playlistDesc.setVisible(true);
-        playlistDesc.setManaged(true);
-    }
-
+    /** Injects the core audio storage for resolving track IDs into full items. */
     public void setAudioStorage(AudioStorage audioStorage) {
         this.audioStorage = audioStorage;
     }
 
+    /** Injects the playback controller to handle media commands. */
     public void setPlaybackBarController(PlaybackBarController pbc){
         this.playbackBarController = pbc;
     }
 
-    private void handleRemove(AudioItem item){
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Remove Track");
-        confirm.setHeaderText("Remove \"" + item.getTitle() + "\" from playlist?");
-        confirm.setContentText("The track stays in your library.");
-
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                playlist.removeTrack(item);
-                masterList.remove(item);
-                refreshPlaylist();
-            }
-        });
-    }
-
+    /**
+     * Injects a specific {@link Playlist} data model into the view and populates the table.
+     *
+     * @param playlist The playlist to display.
+     */
     public void loadPlaylist(Playlist playlist){
         this.playlist = playlist;
         playlistTitle.setText(playlist.getTitle());
@@ -154,6 +172,25 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         refreshPlaylist();
     }
 
+    /* UI action handlers */
+
+    /** Saves the modified playlist description from the inline text field back to the model. */
+    private void saveEdit() {
+        String newText = descField.getText();
+
+        if (!newText.isBlank()) {
+            playlistDesc.setText(newText);
+            playlist.setDescription(newText);
+        }
+
+        descField.setVisible(false);
+        descField.setManaged(false);
+
+        playlistDesc.setVisible(true);
+        playlistDesc.setManaged(true);
+    }
+
+    /** Pushes the entire currently displayed list to the playback queue. */
     @FXML
     private void handlePlayAll() {
         if(masterList.isEmpty()){
@@ -162,36 +199,10 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         playbackBarController.playPlaylist(displayList, 0);
     }
 
-    private void refreshPlaylist() {
-        // start from full master list
-        List<AudioItem> result = new ArrayList<>(masterList);
-
-        // apply search using matchesQuery()
-        if(!currentQuery.isBlank()){
-            result = LibraryLogic.search(masterList, currentQuery);
-        }
-
-        // apply filter using passesFilter()
-        if(filterCategory!=null){
-            result = LibraryLogic.filter(masterList, filterCategory, filterOperator, filterValue);
-        }
-
-        String sortVal = sortComboBox.getValue();
-        result = LibraryLogic.sort(result, sortVal);
-
-        displayList.setAll(result);
-
-        int total = masterList.size();
-        trackCountLabel.setText(result.size() == total ? total + (total == 1 ? " song" : " songs") : result.size() + " of " + total + " songs");
-    }
-
-    /** Called by MainController when the search field changes. */
-    public void applySearch(String query) {
-        currentQuery = query;
-        refreshPlaylist();
-    }
-
-    // Sort
+    /**
+     * Sorts the table data based on the newly-selected ComboBox value.
+     * Manually syncs the TableView column arrows to match.
+     */
     @FXML
     private void handleSort() {
         String selected = sortComboBox.getValue();
@@ -210,13 +221,13 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         refreshPlaylist();
     }
 
-    // Filter
+    /** Opens the filter dialogue menu. */
     @FXML
     private void handleFilter() {
         FilterDialog.showFilterDialog(masterList, this);
     }
 
-    // clear filter
+    /** Clears all active filters and forces a full table re-render. */
     @FXML
     private void handleClearFilter() {
         filterCategory = null; filterValue = null; filterOperator = null;
@@ -226,6 +237,41 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         refreshPlaylist();
     }
 
+    /** Updates the active search query and triggers a table re-render. */
+    public void applySearch(String query) {
+        currentQuery = query;
+        refreshPlaylist();
+    }
+
+    /* Rendering logic */
+
+    /**
+     * Processes the master playlist tracklist through the active search query,
+     * the active filter condition, and the active sorting criteria, before updating
+     * the bound {@link ObservableList} to automatically refresh the JavaFX TableView.
+     */
+    private void refreshPlaylist() {
+        List<AudioItem> result = new ArrayList<>(masterList);
+
+        // Apply search
+        if(!currentQuery.isBlank()){
+            result = LibraryLogic.search(masterList, currentQuery);
+        }
+
+        // Apply filter
+        if(filterCategory!=null){
+            result = LibraryLogic.filter(masterList, filterCategory, filterOperator, filterValue);
+        }
+
+        // Apply sort
+        String sortVal = sortComboBox.getValue();
+        result = LibraryLogic.sort(result, sortVal);
+
+        displayList.setAll(result);
+        updateTrackCount(result.size());
+    }
+
+    /** Updates the label tracking the number of displayed results in the table. */
     private void updateTrackCount(int displayed) {
         int total = masterList.size();
         if (displayed == total) {
@@ -235,7 +281,8 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         }
     }
 
-    // Listeners
+    /* TableInteractionListener interface implementations */
+
     @Override
     public void onTrackDoubleClicked(AudioItem item, int index) {
         if (playbackBarController != null)
@@ -257,6 +304,7 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         });
     }
 
+    /* FilterListener interface implementations */
 
     @Override
     public void onFilterApplied(String category, String operator, String value, String clearLabelText) {

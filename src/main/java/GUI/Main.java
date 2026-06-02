@@ -8,8 +8,18 @@ import javafx.stage.Stage;
 import module3.storage.AudioStorage;
 import module3.storage.FileManager;
 import module3.storage.PlaylistStorage;
-
 import java.io.IOException;
+
+/**
+ * The primary entry point for the JavaFX application.
+ * <p>
+ *     This class serves as the composition root for the application. It handles
+ *     the initialization of the primary window (Stage), loads the root FXML layout,
+ *     and wires up the core dependencies. It also manages the data persistence
+ *     lifecycle by reading JSON files on startup and adding a shutdown hook to
+ *     save the state when the user closes the app.
+ * </p>
+ */
 
 public class Main extends Application {
     @Override

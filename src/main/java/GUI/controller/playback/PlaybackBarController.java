@@ -14,35 +14,72 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-
 import module1.audioModel.AudioItem;
 import module4.playback.Controller;
 import static module5.util.LibraryLogic.formatTime;
-
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * The UI controller managing the persistent bottom playback bar.
+ * <p>
+ *     This class serves as the visual frontend for the Module 4 playback engine.
+ *     It manages media controls (play, pause, skip), dynamic progress/volume sliders,
+ *     and synchronizes the global "Now Playing" state across the library and queue views.
+ * </p>
+ */
 
 public class PlaybackBarController implements Initializable {
+
+    /* FXML bindings, state variables */
+
+    /** The fallback icon in case image does not load */
     @FXML private Label fallbackIcon;
+
+    /** The cover image of current track */
     @FXML private ImageView nowPlayingImage;
+
+    /** The title of current track */
     @FXML private Label nowPlayingTitle;
+
+    /** The artist of current track */
     @FXML private Label  nowPlayingArtist;
+
+    /** Main play button on the playback bar below */
     @FXML private Button btnPlayPause;
+
+    /** The queue button to open queue interface */
     @FXML private Button btnQueue;
 
+    /** The progress slider below the play button */
     @FXML private Slider progressSlider;
+
+    /** The volume slider next to the queue button */
     @FXML private Slider volumeSlider;
+
+    /** The left label indicating elapsed time of the current track */
     @FXML private Label  currentTimeLabel;
+
+    /** The right label indicating total length of the current track */
     @FXML private Label  totalTimeLabel;
+
+    /** Timeline object used to display elapsed time visually on the slider */
     private Timeline progressTimeline;
+
+    /* Controllers */
 
     private MainController mainController;
     private LibraryController libraryController;
     private QueueController queueController;
     private Controller playbackController;
 
+    /* Initialization */
+
+    /**
+     * Automatically invoked by JavaFX after the FXML files have been loaded.
+     * Initializes default UI states of the playback bar and the sliders, now-playing image.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize playback controller
@@ -77,13 +114,20 @@ public class PlaybackBarController implements Initializable {
         nowPlayingImage.setClip(clip);
     }
 
-    // Set up controller
+    /* Dependencies */
+
+    /** Injects the library controller to sync active track highlights. */
     public void setLibraryController(LibraryController lc) {this.libraryController = lc;}
 
+    /** Injects the queue controller to update the "Up Next" sidebar. */
     public void setQueueController(QueueController qc) {this.queueController = qc;}
 
+    /** Injects the main facade controller for layout toggling. */
     public void setMainController(MainController mc) {this.mainController = mc;}
 
+    /* Media Controls */
+
+    /** Toggles the playback state between play and pause, syncing the UI buttons. */
     @FXML
     public void handlePlayPause() {
         if(btnPlayPause.getText().equals("⏸")){
@@ -100,6 +144,10 @@ public class PlaybackBarController implements Initializable {
         }
     }
 
+    /**
+     * Reverts to the previous track, or restarts the current track if it is the first item
+     * in the queue.
+     */
     @FXML
     private void handlePrevious() {
         if (playbackController.getCurrIndex() == 0) {
@@ -109,6 +157,10 @@ public class PlaybackBarController implements Initializable {
         playbackController.playPrevious();
     }
 
+    /**
+     * Advances to the next track in the queue, or restarts the current track if it is the final
+     * item in the queue.
+     */
     @FXML
     private void handleNext() {
         // If last song ends, clicking "next" wont work
@@ -125,91 +177,8 @@ public class PlaybackBarController implements Initializable {
         playbackController.playNext();
     }
 
-    /*
+    /** Toggles the visibility of the Queue sidebar pane. */
     @FXML
-    private void handleShuffle() {
-        playbackController.shuffle();
-    }
-
-    @FXML
-    private void handleRepeat() {
-        // toggle repeat mode
-    }
-     */
-
-    @FXML
-    private void handleProgressPressed() {
-        if(progressTimeline != null){
-            progressTimeline.pause();
-        }
-    }
-
-    @FXML
-    private void handleProgressReleased() {
-        double total  = playbackController.getDuration().toSeconds();
-        System.out.println(progressSlider.getValue());
-        double seekTo = (progressSlider.getValue() / 100.0) * total;
-        System.out.println(seekTo);
-        playbackController.setTime(seekTo);
-
-        // Resume timeline after seek
-        if (progressTimeline != null) {
-            progressTimeline.play();
-        }
-    }
-
-    @FXML
-    private void handleVolumeChange() {
-        playbackController.setVolume(volumeSlider.getValue());
-    }
-
-
-    /**
-     * Called by LibraryController or PlaylistController when the user
-     * double-clicks a track to start playing it.
-     */
-    public void playTrack(AudioItem item) {
-        // Look up the AudioItem from AudioStorage directly
-        if(item == null) {
-            return;
-        }
-
-        // 3. Tell playback Controller to load and play
-        //    Replace loadSingle with your actual method name
-        // Clear whatever was in the queue
-        playbackController.clearQueue();
-
-        // Load the item and play it directly
-        playbackController.loadSingle(item);
-        playbackController.startPlayBack(item);
-
-    }
-
-    public void addToQueue(AudioItem item){
-        if (playbackController.getCurrentTrack() == null) {
-            playbackController.loadSingle(item);
-            playbackController.startPlayBack(playbackController.getCurrentTrack());
-        }
-        else {
-            playbackController.loadSingle(item);
-        }
-        queueController.updateQueue(playbackController.getQueue());
-    }
-
-    public void playPlaylist(List<AudioItem> playlist, int index){
-        if(playlist == null) {
-            return;
-        }
-        playbackController.clearQueue();
-        playbackController.loadItems(playlist);
-        playbackController.playIndex(index);
-        queueController.updateQueue(playbackController.getQueue());
-    }
-
-    public void clearUpcoming() {
-        playbackController.clearUpcoming();
-    }
-
     public void handleQueueToggle() {
         if (mainController != null) {
             mainController.toggleQueue();
@@ -222,6 +191,143 @@ public class PlaybackBarController implements Initializable {
         }
     }
 
+    /* Slider Interactions */
+
+    /** Pauses the progress timeline while the user is actively dragging the slider. */
+    @FXML
+    private void handleProgressPressed() {
+        if(progressTimeline != null){
+            progressTimeline.pause();
+        }
+    }
+
+    /** Calculates the target timestamp and seeks the audio player upon slider release. */
+    @FXML
+    private void handleProgressReleased() {
+        double total  = playbackController.getDuration().toSeconds();
+        double seekTo = (progressSlider.getValue() / 100.0) * total;
+        playbackController.setTime(seekTo);
+
+        // Resume timeline after seek
+        if (progressTimeline != null) {
+            progressTimeline.play();
+        }
+    }
+
+    /** Updates the audio engine volume when the volume slider is adjusted. */
+    @FXML
+    private void handleVolumeChange() {
+        playbackController.setVolume(volumeSlider.getValue());
+    }
+
+    /* Public playback API */
+
+    /**
+     * Clears the current queue and immediately initiates playback of a specific track.
+     * Called when a user double-clicks a track in the library view.
+     *
+     * @param item The {@link AudioItem} to play.
+     */
+    public void playTrack(AudioItem item) {
+        if(item == null) {
+            return;
+        }
+        playbackController.clearQueue();
+        playbackController.loadSingle(item);
+        playbackController.startPlayBack(item);
+
+    }
+
+    /**
+     * Appends a track to the current queue. If nothing is playing, playback begins immediately.
+     *
+     * @param item The {@link AudioItem} to enqueue.
+     */
+    public void addToQueue(AudioItem item){
+        if (playbackController.getCurrentTrack() == null) {
+            playbackController.loadSingle(item);
+            playbackController.startPlayBack(playbackController.getCurrentTrack());
+        }
+        else {
+            playbackController.loadSingle(item);
+        }
+        queueController.updateQueue(playbackController.getQueue());
+    }
+
+    /**
+     * Replaces the active queue with an entire playlist and begins playback at a specific index.
+     *
+     * @param playlist The list of {@link AudioItem}s representing the playlist.
+     * @param index    The integer index of the track to start playing.
+     */
+    public void playPlaylist(List<AudioItem> playlist, int index){
+        if (playlist == null) {
+            return;
+        }
+        playbackController.clearQueue();
+        playbackController.loadItems(playlist);
+        playbackController.playIndex(index);
+        queueController.updateQueue(playbackController.getQueue());
+    }
+
+    /** Clears all tracks scheduled to play after the currently active track. */
+    public void clearUpcoming() {
+        playbackController.clearUpcoming();
+    }
+
+    /**
+     * Skips directly to a specific track within the upcoming queue using its exact UI index.
+     *
+     * @param uiIndex The integer index of the cell clicked in the Queue UI.
+     */
+    public void playQueueItem(int uiIndex) {
+        if (uiIndex < 0) return;
+
+        // Calculate the absolute index in the backend array and play it
+        int absoluteIndex = playbackController.getCurrIndex() + 1 + uiIndex;
+        playbackController.playIndex(absoluteIndex);
+
+        // Sync the UI queue
+        if (queueController != null) {
+            queueController.updateQueue(playbackController.getQueue());
+        }
+    }
+
+    /**
+     * Removes a specific track from the upcoming queue using its exact UI index.
+     *
+     * @param uiIndex The integer index of the cell clicked in the Queue UI.
+     */
+    public void removeQueueItem(int uiIndex) {
+        if (uiIndex < 0) return;
+
+        // Get the upcoming queue
+        List<AudioItem> upcoming = playbackController.getQueue();
+
+        if (uiIndex < upcoming.size()) {
+            // Remove the exact item by index, ignoring duplicates
+            upcoming.remove(uiIndex);
+
+            // Clear the backend upcoming queue
+            playbackController.clearUpcoming();
+
+            // Re-enqueue the remaining items to rebuild the queue safely
+            for (AudioItem remainingItem : upcoming) {
+                playbackController.loadSingle(remainingItem);
+            }
+
+            // Sync the UI queue
+            if (queueController != null) {
+                queueController.updateQueue(playbackController.getQueue());
+            }
+        }
+    }
+
+    /* Helpers */
+
+    /**
+     * Updates the UI metadata, album art, and sibling controllers when the active track changes.
+     */
     private void updateNowPlaying() {
         AudioItem current = playbackController.getCurrentTrack();
 
@@ -250,7 +356,9 @@ public class PlaybackBarController implements Initializable {
         startProgressTimeline();
     }
 
-    // A method to clean up everything after the queue has ended.
+    /**
+     * Resets the playback bar to a blank, default state once the queue ended.
+     */
     private void endQueue() {
         nowPlayingImage.setImage(null);
         nowPlayingImage.setUserData(null); // Clear the identity tag
@@ -278,7 +386,7 @@ public class PlaybackBarController implements Initializable {
         }
     }
 
-    // Helpers
+    /** Initializes the timeline loop that updates the progress slider every second. */
     private void startProgressTimeline() {
         // Stop any existing timeline first
         if (progressTimeline != null) {
@@ -292,20 +400,19 @@ public class PlaybackBarController implements Initializable {
         progressTimeline.play();
     }
 
+    /** Calculates the current media progress and updates the slider UI. */
     private void tickProgress() {
         double current = playbackController.getCurrentTime().toSeconds();
         double total   = playbackController.getDuration().toSeconds();
 
         if (total <= 0) return;
 
-        // Update slider position
         progressSlider.setValue((current / total) * 100);
-
-        // Update time labels
         currentTimeLabel.setText(formatTime((int) current));
         totalTimeLabel.setText(formatTime((int) total));
     }
 
+    /** Recolors the active track portion of the volume slider. */
     private void updateVolumeGradient() {
         javafx.scene.Node track = volumeSlider.lookup(".track");
         if (track != null) {
@@ -327,6 +434,7 @@ public class PlaybackBarController implements Initializable {
         }
     }
 
+    /** Recolors the active track portion of the progress slider. */
     private void updateProgressGradient() {
         javafx.scene.Node track = progressSlider.lookup(".track");
         if (track != null) {

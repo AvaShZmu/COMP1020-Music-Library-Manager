@@ -5,9 +5,27 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import module1.audioModel.AudioItem;
 
+/**
+ * A custom JavaFX {@link Dialog} used for viewing and modifying track metadata.
+ * <p>
+ *     This dialog dynamically adjusts its headers, button text, and intent based on the
+ *     provided operational mode (Importing new files vs. Editing existing library files).
+ *     Returns the modified {@link AudioItem} upon confirmation.
+ * </p>
+ */
+
 public class TrackEditDialog extends Dialog<AudioItem> {
+    /**
+     * Defines the context in which this dialog is called
+     */
     public enum Mode { IMPORT, EDIT }
 
+    /**
+     * Constructs a metadata editing dialog.
+     *
+     * @param draftItem The initial {@link AudioItem} data to populate the text fields.
+     * @param mode      The {@link Mode} determining the dialog's phrasing and button labels.
+     */
     public TrackEditDialog(AudioItem draftItem, Mode mode) {
         if (mode == Mode.IMPORT) {
             setTitle("Review Track Info");
