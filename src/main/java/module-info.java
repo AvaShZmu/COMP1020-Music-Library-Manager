@@ -12,6 +12,7 @@ module com.yourname {
 
         opens GUI to javafx.fxml;
         exports GUI;
+        exports interfaces;
         exports module1.audioModel;
         exports module2.playlistModel;
         exports module3.storage;

@@ -1,9 +1,7 @@
 package module5.util;
+
 import module1.audioModel.AudioItem;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
-
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -11,7 +9,27 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
+/**
+ * A utility class responsible for extracting ID3 tags and metadata from local audio files.
+ * <p>
+ * This class acts as a wrapper around the external {@code jAudioTagger} library.
+ * It automatically reads local files and constructs the application's internal {@link AudioItem} models.
+ * </p>
+ */
+
 public class MetadataExtractor {
+
+    /* Extraction methods */
+
+    /**
+     * Parses a local audio file and extracts its embedded metadata to build an {@code AudioItem}.
+     * If certain ID3 fields (like Title or Artist) are missing, this method automatically
+     * resolves them to safe fallback strings (e.g., using the file name as the title).
+     *
+     * @param filePath The path to the local audio file.
+     * @return A fully constructed {@link AudioItem} containing the extracted data,
+     * or {@code null} if the file cannot be read or processed.
+     */
     public static AudioItem extract(String filePath) {
         try {
             // jAudioTagger reads file
@@ -25,7 +43,7 @@ public class MetadataExtractor {
             String releaseDate = tag.getFirst(FieldKey.YEAR);
             String genre = tag.getFirst(FieldKey.GENRE);
 
-            // Get Audiohead
+            // Get AudioHeader
             AudioHeader audioHeader = audioFile.getAudioHeader();
             int durationInSeconds = audioHeader.getTrackLength();
 
@@ -58,6 +76,13 @@ public class MetadataExtractor {
         }
     }
 
+    /**
+     * Extracts the embedded cover artwork image from a given audio file.
+     *
+     * @param filePath The absolute or relative path to the local audio file.
+     * @return A {@code byte[]} array containing the raw binary image data,
+     * or {@code null} if the file contains no artwork or fails to be read.
+     */
     public static byte[] getImage(String filePath) {
         try {
             File audioFileObject = new File(filePath);
