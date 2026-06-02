@@ -127,3 +127,6 @@ We acknowledge the following the following were used as inspiration for our proj
 - [lavaplayer](https://github.com/sedmelluq/lavaplayer) (inspiration for the playback engine architecturer)
 - [Gemini](https://gemini.google.com) (utilized for architectural advice and debugging assistance)
 
+---
+
+*This project was developed as part of COMP1020 - Object-Oriented Programming and Data Structures, Spring 2026, VinUniversity.*
