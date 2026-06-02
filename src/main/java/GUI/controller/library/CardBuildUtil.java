@@ -14,11 +14,24 @@ import javafx.util.Duration;
 import module1.audioModel.AudioItem;
 import module2.playlistModel.Playlist;
 import module3.storage.PlaylistStorage;
-
 import java.util.Collection;
+
+/**
+ * A UI utility class responsible for constructing interactive track cards in the library.
+ * <p>
+ *     This class handles the complex JavaFX layout generation, animation handling,
+ *     and context menu creation for individual audio items displayed in the library grid.
+ * </p>
+ */
 
 public class CardBuildUtil {
 
+    /**
+     * Defines the callbacks for handling user interactions with a track card.
+     * The {@link LibraryController} needs to implement the abstract methods in
+     * the {@link CardInteractionListener} interface, in order to handle interaction
+     * between modules.
+     */
     public interface CardInteractionListener {
         void onPlayClicked(AudioItem item, VBox card);
         void onCardSelected(AudioItem item, VBox card, boolean doubleClicked);
@@ -27,6 +40,18 @@ public class CardBuildUtil {
         void onEditRequested(AudioItem item);
     }
 
+    /**
+     * Constructs a fully formatted JavaFX {@link VBox} representing a track card in the library.
+     * This includes the track's cover, metadata (title, artist), a play button which appears
+     * when hovered, and a context menu containing the four options when right clicked.
+     *
+     * @param item The {@link AudioItem} containing the track's metadata.
+     * @param playlistStorage The storage reference for populating the "Add to playlist" meny.
+     * @param playbackBarController The Controller managing the playback engine.
+     * @param playingCard The currently active track card (used to sync UI states).
+     * @param listener The {@link CardInteractionListener} to handle click events.
+     * @return A {@link VBox} node ready to be added to the library grid.
+     */
     static protected VBox buildCard(AudioItem item, PlaylistStorage playlistStorage, PlaybackBarController playbackBarController, VBox playingCard, CardInteractionListener listener) {
         // Art square
         StackPane artPane = new StackPane();
@@ -42,7 +67,7 @@ public class CardBuildUtil {
         coverView.setFitWidth(155);
         coverView.setPreserveRatio(true);
 
-        // rounded corners
+        // Rounded corners
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(155, 155);
         clip.setArcWidth(10);  // The amount of rounding (increase for more circular)
         clip.setArcHeight(10); // Keep this matching the ArcWidth
@@ -144,8 +169,6 @@ public class CardBuildUtil {
                 }
             }
         });
-
-
 
         remove.setOnAction(e -> listener.onRemoveRequested(item));
         addToQueue.setOnAction(e -> listener.onAddToQueue(item));

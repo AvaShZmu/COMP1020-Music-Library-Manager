@@ -6,11 +6,28 @@ import javafx.stage.Window;
 import module1.audioModel.AudioItem;
 import module3.storage.AudioStorage;
 import module5.util.MetadataExtractor;
-
 import java.io.File;
 import java.util.List;
 
+/**
+ * A UI utility class that manages importing audio files.
+ * <p>
+ *     This class abstracts the JavaFX {@link FileChooser} logic and delivers metadata extraction
+ *     to the backend before prompting user to edit or finalize the new track.
+ * </p>
+ */
+
 public class ImportUtil {
+
+    /**
+     * Opens a system file chooser to allow the user to select local audio files.
+     * Extracts metadata from selected files and updates the library.
+     *
+     * @param window The parent JavaFX window.
+     * @param masterList The active GUI list tracking all loaded library items.
+     * @param audioStorage The core database repo to persist new tracks.
+     * @param onImportSuccess A {@link Runnable} callback triggered to refresh UI after import.
+     */
     public static void handleImport(Window window, List<AudioItem> masterList, AudioStorage audioStorage, Runnable onImportSuccess) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Import Audio Files");
