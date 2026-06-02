@@ -16,7 +16,7 @@ browse, navigate and search their library, manage playlists, and control playbac
 
 ## Installation
 
-- In order to install and run the application, please make sure that you have installed Java SE 17+ in your system: https://www.oracle.com/java/technologies/
+- In order to install and run the application, please make sure that you have installed [Java SE 17+](https://www.oracle.com/java/technologies/) in your system.
 
 - If you are viewing this from the github repository, head towards the Github release page and install the latest version, based on your operating system (Windows or macOS).
 
