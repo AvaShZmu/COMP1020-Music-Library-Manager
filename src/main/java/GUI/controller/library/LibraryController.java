@@ -127,15 +127,29 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
     /* UI Action handlers */
 
     /**
-     * Synchronizes the play/pause icon on the active track card to match the global playback state.
-     *
-     * @param textState The icon text to apply (e.g., "▶" or "⏸").
+     * Synchronizes the play/pause SVG icon on the currently active track card.
+     * Clears any legacy text from the button and updates the vector graphic path
+     * to reflect the current playback state.
+     * @param isPlaying true if the track is currently playing (displays the pause icon);
+     * false if paused (displays the play icon).
      */
-    public void syncActiveCardButton(String textState) {
+    public void syncActiveCardButton(boolean isPlaying) {
         if (playingCard != null) {
             Button btn = (Button) playingCard.getProperties().get("playButton");
+
             if (btn != null) {
-                btn.setText(textState);
+                // Remove any leftover text just in case
+                btn.setText("");
+
+                // Extract the SVG shape from inside the button
+                if (btn.getGraphic() instanceof javafx.scene.shape.SVGPath) {
+                    javafx.scene.shape.SVGPath svgIcon = (javafx.scene.shape.SVGPath) btn.getGraphic();
+                    String playPath = "M8 5v14l11-7z";
+                    String pausePath = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
+
+                    // Swap the paths
+                    svgIcon.setContent(isPlaying ? pausePath : playPath);
+                }
             }
         }
     }
@@ -225,6 +239,9 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
      * @param trackID The UUID of the
      */
     public void highlightPlayingCard(String trackID) {
+        String playPath = "M8 5v14l11-7z";
+        String pausePath = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
+
         // Clean up prev track
         if (playingCard != null) {
             playingCard.getStyleClass().remove("playing");
@@ -234,7 +251,12 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
             FadeTransition oldFadeOut = (FadeTransition) playingCard.getProperties().get("fadeOut");
 
             if (oldBtn != null) {
-                oldBtn.setText("▶");
+                oldBtn.setText(""); // Ensure no ghost text appears
+
+                // Revert icon back to Play
+                if (oldBtn.getGraphic() instanceof javafx.scene.shape.SVGPath) {
+                    ((javafx.scene.shape.SVGPath) oldBtn.getGraphic()).setContent(playPath);
+                }
 
                 if (!playingCard.isHover()) {
                     if (oldFadeIn != null) oldFadeIn.stop();
@@ -261,7 +283,11 @@ public class LibraryController implements Initializable, CardBuildUtil.CardInter
                     FadeTransition newFadeIn = (FadeTransition) playingCard.getProperties().get("fadeIn");
                     FadeTransition newFadeOut = (FadeTransition) playingCard.getProperties().get("fadeOut");
                     if (newBtn != null) {
-                        newBtn.setText("⏸");
+                        newBtn.setText("");
+
+                        if (newBtn.getGraphic() instanceof javafx.scene.shape.SVGPath) {
+                            ((javafx.scene.shape.SVGPath) newBtn.getGraphic()).setContent(pausePath);
+                        }
 
                         if (newFadeOut != null) newFadeOut.stop();
                         newBtn.setVisible(true);

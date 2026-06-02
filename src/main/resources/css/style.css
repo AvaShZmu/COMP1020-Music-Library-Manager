@@ -289,20 +289,27 @@
 }
 
 /* The toggle button on the bottom Playback Bar */
+
+/* 1. Base Button Styling */
 .btn-queue {
     -fx-background-color: transparent;
-    -fx-text-fill: #b3b3b3;
-    -fx-font-size: 18px; /* Slightly larger so the ☰ icon is legible */
     -fx-cursor: hand;
     -fx-padding: 4px;
 }
 
-.btn-queue.active {
-    -fx-text-fill: #1db954;
+/* 2. Default SVG Styling (Gray color, Taller size) */
+.btn-queue .queue-icon {
+    -fx-fill: #b3b3b3;
+    -fx-scale-y: 1.4;
 }
 
-.btn-queue:hover {
-    -fx-text-fill: white;
+.btn-queue .queue-icon:hover {
+    -fx-fill:#ffffff;
+}
+
+/* 3. Active SVG Styling (Changes to green when clicked) */
+.btn-queue.active .queue-icon {
+    -fx-fill: #1db954;
 }
 
 /* =====================================================
@@ -535,24 +542,28 @@
     -fx-spacing: 10;
 }
 
+/* 1. Base Button Styling (Removed text-fill and font-size) */
 .btn-playback {
     -fx-background-color: transparent;
-    -fx-text-fill: #aaaaaa;
     -fx-background-radius: 50;
     -fx-border-radius: 50;
     -fx-border-width: 0;
     -fx-pref-width: 36px;
     -fx-pref-height: 36px;
     -fx-cursor: hand;
-    -fx-font-size: 16px;
 }
 
-.btn-playback:hover {
-    -fx-text-fill: #ffffff !important;
+/* 2. Default SVG Styling (The default gray color) */
+.btn-playback .playback-icon {
+    -fx-fill: #aaaaaa;
+
+    -fx-scale-x: 1.4;
+    -fx-scale-y: 1.4;
 }
 
-.btn-playback:armed {
-    -fx-text-fill: #dddddd !important;
+/* 3. Hover SVG Styling (Turns white when the button is hovered) */
+.btn-playback:hover .playback-icon {
+    -fx-fill: #ffffff;
 }
 
 .btn-play-pause {

@@ -46,6 +46,9 @@ public class PlaybackBarController implements Initializable {
     /** The artist of current track */
     @FXML private Label  nowPlayingArtist;
 
+    /** Icon for play pause*/
+    @FXML private javafx.scene.shape.SVGPath playPauseIcon;
+
     /** Main play button on the playback bar below */
     @FXML private Button btnPlayPause;
 
@@ -66,6 +69,10 @@ public class PlaybackBarController implements Initializable {
 
     /** Timeline object used to display elapsed time visually on the slider */
     private Timeline progressTimeline;
+
+    // Standard Material Design SVG paths
+    private final String PLAY_SVG = "M8 5v14l11-7z";
+    private final String PAUSE_SVG = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
 
     /* Controllers */
 
@@ -130,17 +137,24 @@ public class PlaybackBarController implements Initializable {
     /** Toggles the playback state between play and pause, syncing the UI buttons. */
     @FXML
     public void handlePlayPause() {
-        if(btnPlayPause.getText().equals("⏸")){
+        if (playbackController.getCurrentTrack() == null)
+            return;
+
+        // Check the SVG path instead of the text
+        if(playPauseIcon.getContent().equals(PAUSE_SVG)){
             playbackController.pause();
-            btnPlayPause.setText("▶");
+            playPauseIcon.setContent(PLAY_SVG);
         }
         else {
             playbackController.resume();
-            btnPlayPause.setText("⏸");
+            playPauseIcon.setContent(PAUSE_SVG);
         }
 
+        // NOTE: You will need to update your libraryController to accept a boolean
+        // (e.g., true for playing, false for paused) instead of passing a text string!
         if (libraryController != null) {
-            libraryController.syncActiveCardButton(btnPlayPause.getText());
+            boolean isPlaying = playPauseIcon.getContent().equals(PAUSE_SVG);
+            libraryController.syncActiveCardButton(isPlaying);
         }
     }
 
@@ -338,7 +352,7 @@ public class PlaybackBarController implements Initializable {
 
         nowPlayingTitle.setText(current.getTitle());
         nowPlayingArtist.setText(current.getAuthor());
-        btnPlayPause.setText("⏸");
+        playPauseIcon.setContent(PAUSE_SVG);
         AsyncImageLoader.playbarImageLoad(current.getFileLocation(), nowPlayingImage, fallbackIcon, current);
 
         // Update card highlight in library if visible
@@ -365,8 +379,8 @@ public class PlaybackBarController implements Initializable {
         fallbackIcon.setVisible(true);
 
         nowPlayingTitle.setText("No track selected");
-        nowPlayingArtist.setText("...");
-        btnPlayPause.setText("▶");
+        nowPlayingArtist.setText("Unknown Artist");
+        playPauseIcon.setContent(PLAY_SVG);
 
         currentTimeLabel.setText("0:00");
         totalTimeLabel.setText("0:00");

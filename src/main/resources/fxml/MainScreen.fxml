@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <BorderPane minHeight="600" minWidth="900" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.main.MainController">
 
     <!-- Top bar -->
@@ -18,7 +20,14 @@
         <HBox alignment="CENTER_LEFT" spacing="16" styleClass="top-bar">
 
             <!-- App title -->
-            <Label styleClass="app-title" text="♪  Music Library" />
+            <ImageView fitHeight="30" preserveRatio="true">
+                <image>
+                    <Image url="@../images/nocturne-logo.png" />
+                </image>
+                <HBox.margin>
+                    <Insets left="8" />
+                </HBox.margin>
+            </ImageView>
 
             <!-- Spacer pushes search to center -->
             <Region HBox.hgrow="ALWAYS" />

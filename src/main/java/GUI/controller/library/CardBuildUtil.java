@@ -15,6 +15,8 @@ import module1.audioModel.AudioItem;
 import module2.playlistModel.Playlist;
 import module3.storage.PlaylistStorage;
 import java.util.Collection;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.paint.Color;
 
 /**
  * A UI utility class responsible for constructing interactive track cards in the library.
@@ -74,8 +76,20 @@ public class CardBuildUtil {
         coverView.setClip(clip);
 
         // Hover play button
-        Button playButton = new Button("▶");
+        Button playButton = new Button();
         playButton.getStyleClass().add("hover-play-button");
+
+        // Construct the pure SVG Icon
+        SVGPath playIconSVG = new SVGPath();
+        playIconSVG.setContent("M8 5v14l11-7z");
+        playIconSVG.setFill(Color.web("#000000"));
+
+        // Scale it up so it isn't too tiny
+        playIconSVG.setScaleX(1.2);
+        playIconSVG.setScaleY(1.2);
+
+        // Inject the SVG into the button
+        playButton.setGraphic(playIconSVG);
 
         playButton.setOpacity(0.0);
         playButton.setVisible(false);
