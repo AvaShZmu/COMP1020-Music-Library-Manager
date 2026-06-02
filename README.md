@@ -1,58 +1,87 @@
-# COMP1020-Music-Library-Manager
-A desktop application for organizing, managing, and playing your personal music collection. Built with Java and JavaFX for COMP1020 – Object-Oriented Programming & Data Structures.
-## 👥 Team (Group 14)
+# Nocturne - Music Library Manager
+Users with large personal audio collections frequently struggle with locating tracks, organizing playlists, and controlling playback in one interface. Nocturne addresses this by providing a single desktop application where users can import audio files,
+browse, navigate and search their library, manage playlists, and control playback - all within a unified JavaFX interface!.
 
-| Name | Student ID | Role |
-|------|-----------|------|
-| Tran Bach | V202502391 | Team Lead, Storage & Playback |
-| Doan Duy Bao Kha | V202502083 | GUI |
-| Nguyen Thi Diep Chi | V202502100 | Playlist Model & Algorithms |
-| Tran Hoang Minh | V202502416 | Audio Model & Metadata |
 
-## ✨ Features
+## Table of Contents
 
+* [Installation](#installation)
+* [Developer Guide](#developer-guide)
+* [Features](#features)
+* [Tech Stack](#tech-stack)
+* [Project Structure](#project-structure)
+* [Architecture](#architecture)
+* [OOP & Data Structures](#oop-and-data-structures)
+* [Team Members](#team-members)
+* [Acknowledgements](#acknowledgements)
+## Installation
+
+
+- In order to install and run the application, please make sure that you have installed Java SE 17+ in your system: https://www.oracle.com/java/technologies/
+
+- If you are viewing this from the github repository, head towards the Github release page and install the latest version, based on your operating system (Windows or macOS).
+
+- For people viewing from a zip file (e.g., instructors), note that two .jar files have been placed in the demonstration folder. As such, if you have Java installed, you can run either one depending on your operating system.
+
+> [!IMPORTANT]
+> Upon launching, some operating systems may prompt you for security permission. Please click **"Allow"** or **"Open Anyway"** to proceed. Rest assured, this application is completely safe and is not malware.
+
+## Developer Guide
+
+For developers, in order to view and run the project, please do the following:
+
+* Clone the repository to your machine:
+```bash
+  git clone https://github.com/AvaShZmu/Nocturne.git
+```
+
+* Open the project in your IDE (preferably IntelliJ IDEA)
+
+* Run the project:
+```bash
+  mvn javafx:run
+```
+## Features
 - Add, remove, and browse audio tracks
 - Search by title or artist; sort and filter your library
 - Create and manage playlists
 - Audio playback with play/pause/skip/volume controls
 - Persistent storage — your library saves between sessions
 
-## 🛠️ Tech Stack
-
-- **Java + JavaFX** — UI and audio playback
+> [!NOTE]
+> **Supported Formats:** Nocturne currently supports playback and metadata extraction for `.mp3` and `.wav` files. Formats such as `flac` are to be added in the future.
+## Tech Stack
+- **Java SE** — Core language and standard library
+- **JavaFX** — GUI framework and Mediaplayer for audio playback
 - **Gson** — JSON-based data persistence
-- **jAudioTagger** — Audio metadata extraction
+- **jAudioTagger** — Extraction of ID3 metadata from audio files
 - **Maven** — Build and dependency management
+- **IntelliJ IDEA** — Primary IDE for development
+## Project Structure
 
-## 🚀 Getting Started
-
-**Prerequisites:** Java 17+, Maven
-
-```bash
-git clone https://github.com/AvaShZmu/COMP1020-Music-Library-Manager.git
-cd COMP1020-Music-Library-Manager
-mvn clean javafx:run
-```
-
-## 📁 Project Structure
 ~~~
-COMP1020-Music-Library-Manager/
+COMP1020_Music_Library_Manager/
 ├── src/
-│   └── main/
-│       └── java/
-│           ├── module-info.java
-│           ├── GUI/
-│           │   └── controller/
-│           ├── module1.audioModel/
-│           ├── module2.playlistModel/
-│           ├── module3.storage/
-│           ├── module4.playback/
-│           └── module5.util/
-├── .gitignore
-├── pom.xml
-└── README.md
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── GUI/                     # UI Layer (JavaFX)
+│   │   │   │   ├── controller/          # FXML view controllers (library, playback, etc.)
+│   │   │   │   ├── Launcher.java        # Entry point
+│   │   │   │   └── Main.java            # Main JavaFX Application class
+│   │   │   ├── interfaces/              # Core application interfaces
+│   │   │   ├── module1.audioModel/      # Data structures for audio tracks
+│   │   │   ├── module2.playlistModel/   # Playlist management and logic
+│   │   │   ├── module3.storage/         # Data persistence and file I/O
+│   │   │   ├── module4.playback/        # Audio engine and controls
+│   │   │   ├── module5.util/            # General helper and utility classes
+│   │   │   └── module-info.java         # Java module declarations
+│   │   └── resources/                   # Static assets (FXML files, CSS, images)
+│   └── test/                            # Unit tests
+├── pom.xml                              # Maven configuration and dependencies
+└── README.md                            # Project overview and run instructions
 ~~~
-## 🏗️ Architecture
+## Architecture
+
 
 The system is split into 5 modules:
 
@@ -64,10 +93,29 @@ The system is split into 5 modules:
 | 4 – Playback | `Controller`, `AudioPlayer`, `PlaybackQueue` | Playback engine with facade API |
 | 5 – Algorithms | `LibraryLogic` | Search, sort (MergeSort), and filter utilities |
 
+> [!NOTE]
+> **Data Persistence:** User library and playlist data is serialized via Gson and saved locally. Upon closing the application, look for the generated `library_data.json` and `playlists.json` files in the root execution directory.
+
 Key data structures: `HashMap<String, AudioItem>` for O(1) lookups, `ArrayList` for the playback queue and playlist ordering.
 
-## 🎓 OOP & DSA Concepts Demonstrated
-
+## OOP and Data Structures
+The following Object-Oriented Programming and DSA concepts were used in this project.
 - **OOP:** Inheritance, Encapsulation, Abstraction (`Comparable`, `Searchable`, `Filterable` interfaces), Facade pattern (`Controller`)
 - **Data Structures:** `HashMap`, `ArrayList`
 - **Algorithms:** Linear Search, MergeSort
+## Team Members
+
+| Name | Student ID | Email |
+|------|-----------|------|
+| Tran Bach | V202502391 | 25bach.t@vinuni.edu.vn |
+| Doan Duy Bao Kha | V202502083 | 25kha.ddb@vinuni.edu.vn |
+| Nguyen Thi Diep Chi | V202502100 | 25chi.ntd@vinuni.edu.vn |
+| Tran Hoang Minh | V202502416 | 25minh.th@vinuni.edu.vn |
+## Acknowledgements
+We acknowledge the following the following were used as inspiration for our project:
+
+- [Spotify](https://www.spotify.com) (for UI inspiration)
+- [wavelink](https://github.com/PythonistaGuild/Wavelink) (inspiration for the playback engine architecture)
+- [lavaplayer](https://github.com/sedmelluq/lavaplayer) (inspiration for the playback engine architecturer)
+- [Gemini](https://gemini.google.com) (utilized for architectural advice and debugging assistance)
+
