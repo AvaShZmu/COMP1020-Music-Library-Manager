@@ -52,8 +52,8 @@ public class TableBuildUtil {
 
         table.widthProperty().addListener((obs, oldVal, newVal) -> {
             double width = newVal.doubleValue();
-            colNumber.setPrefWidth(width * 0.06);
-            colTitle.setPrefWidth(width * 0.30);
+            colNumber.setPrefWidth(width * 0.08);
+            colTitle.setPrefWidth(width * 0.28);
             colArtist.setPrefWidth(width * 0.28);
             colGenre.setPrefWidth(width * 0.20);
             colDuration.setPrefWidth(width * 0.16);

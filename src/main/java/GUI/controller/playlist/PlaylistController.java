@@ -101,13 +101,13 @@ public class PlaylistController implements Initializable, TableBuildUtil.TableIn
         trackTable.setItems(displayList);
 
         // Set up the sort combo box
-        sortComboBox.getItems().addAll("Custom Order", "Title A → Z", "Title Z → A", "Longest First", "Shortest First");
-        sortComboBox.setValue("Custom Order");
+        sortComboBox.getItems().addAll("Oldest Added", "Title A → Z", "Title Z → A", "Longest First", "Shortest First");
+        sortComboBox.setValue("Oldest Added");
 
         // Sync TableView's built-in column arrows with the combo box
         trackTable.setSortPolicy(tv -> {
             if (tv.getSortOrder().isEmpty()) {
-                sortComboBox.setValue("Custom Order");
+                sortComboBox.setValue("Oldest Added");
                 refreshPlaylist();
                 return true;
             }
