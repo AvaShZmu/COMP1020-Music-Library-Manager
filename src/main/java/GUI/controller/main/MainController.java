@@ -234,7 +234,7 @@ public class MainController implements Initializable {
         try {
             if(playlistView == null) {
                 FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/PlaylistView.fxml")
+                        getClass().getResource("/fxml/PlayListView.fxml")
                 );
                 playlistView = loader.load();
                 playlistController = loader.getController();
