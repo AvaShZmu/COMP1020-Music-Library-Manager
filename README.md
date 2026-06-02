@@ -2,7 +2,6 @@
 Users with large personal audio collections frequently struggle with locating tracks, organizing playlists, and controlling playback in one interface. Nocturne addresses this by providing a single desktop application where users can import audio files,
 browse, navigate and search their library, manage playlists, and control playback - all within a unified JavaFX interface!.
 
-
 ## Table of Contents
 
 * [Installation](#installation)
@@ -14,8 +13,8 @@ browse, navigate and search their library, manage playlists, and control playbac
 * [OOP & Data Structures](#oop-and-data-structures)
 * [Team Members](#team-members)
 * [Acknowledgements](#acknowledgements)
-## Installation
 
+## Installation
 
 - In order to install and run the application, please make sure that you have installed Java SE 17+ in your system: https://www.oracle.com/java/technologies/
 
@@ -41,7 +40,9 @@ For developers, in order to view and run the project, please do the following:
 ```bash
   mvn javafx:run
 ```
+
 ## Features
+
 - Add, remove, and browse audio tracks
 - Search by title or artist; sort and filter your library
 - Create and manage playlists
@@ -50,13 +51,16 @@ For developers, in order to view and run the project, please do the following:
 
 > [!NOTE]
 > **Supported Formats:** Nocturne currently supports playback and metadata extraction for `.mp3` and `.wav` files. Formats such as `flac` are to be added in the future.
+
 ## Tech Stack
+
 - **Java SE** — Core language and standard library
 - **JavaFX** — GUI framework and Mediaplayer for audio playback
 - **Gson** — JSON-based data persistence
 - **jAudioTagger** — Extraction of ID3 metadata from audio files
 - **Maven** — Build and dependency management
 - **IntelliJ IDEA** — Primary IDE for development
+- 
 ## Project Structure
 
 ~~~
@@ -80,8 +84,8 @@ COMP1020_Music_Library_Manager/
 ├── pom.xml                              # Maven configuration and dependencies
 └── README.md                            # Project overview and run instructions
 ~~~
-## Architecture
 
+## Architecture
 
 The system is split into 5 modules:
 
@@ -99,10 +103,12 @@ The system is split into 5 modules:
 Key data structures: `HashMap<String, AudioItem>` for O(1) lookups, `ArrayList` for the playback queue and playlist ordering.
 
 ## OOP and Data Structures
+
 The following Object-Oriented Programming and DSA concepts were used in this project.
 - **OOP:** Inheritance, Encapsulation, Abstraction (`Comparable`, `Searchable`, `Filterable` interfaces), Facade pattern (`Controller`)
 - **Data Structures:** `HashMap`, `ArrayList`
 - **Algorithms:** Linear Search, MergeSort
+
 ## Team Members
 
 | Name | Student ID | Email |
@@ -111,7 +117,9 @@ The following Object-Oriented Programming and DSA concepts were used in this pro
 | Doan Duy Bao Kha | V202502083 | 25kha.ddb@vinuni.edu.vn |
 | Nguyen Thi Diep Chi | V202502100 | 25chi.ntd@vinuni.edu.vn |
 | Tran Hoang Minh | V202502416 | 25minh.th@vinuni.edu.vn |
+
 ## Acknowledgements
+
 We acknowledge the following the following were used as inspiration for our project:
 
 - [Spotify](https://www.spotify.com) (for UI inspiration)
