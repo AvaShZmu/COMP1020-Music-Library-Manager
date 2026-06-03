@@ -16,6 +16,12 @@ browse, navigate and search their library, manage playlists, and control playbac
 
 ## Installation
 
+>[!NOTE]
+>This application works with local audio files. If you don't already have a local music collection of (preferably well-tagged) mp3 files, you can refer to
+>our [sample list](https://drive.google.com/drive/folders/10TS9JoTon5uKNKznU8Vyobcdj2MITmDN?usp=sharing) to try it out for yourself. There are many unofficial
+>sites out there supporting well tagged mp3 files ([Squid.wtf](https://qobuz.squid.wtf)), although we do not officially endorse the usage of such websites. Instead,
+>you also have the option of buying and supporting the creators directly from trusted online vendors!
+
 - In order to install and run the application, please make sure that you have installed [Java SE 17+](https://www.oracle.com/java/technologies/) in your system.
 
 - If you are viewing this from the github repository, head towards the Github release page and install the latest version, based on your operating system (Windows or macOS).
