@@ -126,7 +126,7 @@ The following Object-Oriented Programming and DSA concepts were used in this pro
 
 ## Acknowledgements
 
-We acknowledge the following the following were used as inspiration for our project:
+We acknowledge the following were used as inspiration for our project:
 
 - [Spotify](https://www.spotify.com) (for UI inspiration)
 - [wavelink](https://github.com/PythonistaGuild/Wavelink) (inspiration for the playback engine architecture)
