@@ -66,7 +66,7 @@ For developers, in order to view and run the project, please do the following:
 - **jAudioTagger** — Extraction of ID3 metadata from audio files
 - **Maven** — Build and dependency management
 - **IntelliJ IDEA** — Primary IDE for development
-- 
+
 ## Project Structure
 
 ~~~
