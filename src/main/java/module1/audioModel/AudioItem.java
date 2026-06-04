@@ -71,7 +71,7 @@ public class AudioItem implements Comparable<AudioItem>, Filterable, Searchable 
      * Supports filtering by "genre" (exact string match) and "date" (numerical comparison).
      *
      * @param category The metadata category to filter by (e.g., "genre", "date")
-     * @param operator The logical operator for comparison (e.g., "=", ">=", "<=")
+     * @param operator The logical operator for comparison
      * @param value The target value to compare against the track's metadata
      * @return {@code true} if the track satisfies the filter condition; {@code false} otherwise.
      */

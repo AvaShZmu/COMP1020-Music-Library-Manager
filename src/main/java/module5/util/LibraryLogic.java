@@ -89,7 +89,7 @@ public class LibraryLogic {
      * Evaluates a mathematical comparison between two numbers based on a string operator.
      *
      * @param n1       The left-hand numerical operand.
-     * @param operator The string representation of a logical operator (e.g., "<", ">=").
+     * @param operator The string representation of a logical operator.
      * @param n2       The right-hand numerical operand.
      * @return {@code true} if the logical evaluation is correct; {@code false} otherwise.
      */
@@ -128,7 +128,7 @@ public class LibraryLogic {
      *
      * @param data        The list of items to filter.
      * @param filterType  The specific metadata category to filter by (e.g., "date", "genre").
-     * @param operator    The logical comparison operator. (e.g., ">", "<", "=", ">=", "<=").
+     * @param operator    The logical comparison operator.
      * @param targetValue The target value to compare each item against.
      * @param <T>         The specific type of the objects in the list (must implement {@code Filterable}).
      * @return A new {@link List} containing only the items that pass the filter logic.
